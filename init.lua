@@ -53,18 +53,18 @@ if ENABLE_SERVERS then
     -- release endpoint. Release (no flag) = the production login below.
     if g_resources.fileExists("/devserver.flag") then
         Servers_init = {
-            ["http://127.0.0.1/summer/login.php"] = {
+            ["http://127.0.0.1/login.php"] = {
                 port = 80,
-                protocol = 1530,
+                protocol = 1533,
                 httpLogin = true,
                 useAuthenticator = false
             }
         }
     else
         Servers_init = {
-            ["http://127.0.0.1/summer/login.php"] = {
+            ["http://127.0.0.1/login.php"] = {
                 port = 80,
-                protocol = 1530,
+                protocol = 1533,
                 httpLogin = true,
                 useAuthenticator = false
             }
@@ -76,11 +76,9 @@ g_app.setName("CrystalOTC");
 g_app.setCompactName("crystalotc");
 g_app.setOrganizationName("Crystal");
 
--- Our exe gates client versions on g_gameConfig.getLastSupportedVersion() (default 1). The
--- ported modules configure supported versions through a mechanism our exe doesn't expose,
--- so setClientVersion(1530) at login threw "Client version 1530 not supported". Raise the
--- ceiling here so the 1530 protocol (our server + data/things/1530) is accepted.
-g_gameConfig.setLastSupportedVersion(1530)
+-- Server gate is 15.33-only. Assets still live under data/things/1530 until a dedicated
+-- 1533 pack exists; things.lua falls back to that folder when /things/1533/ is missing.
+g_gameConfig.setLastSupportedVersion(1533)
 
 g_app.hasUpdater = function()
     return (Services.updater and Services.updater ~= "" and g_modules.getModule("updater"))

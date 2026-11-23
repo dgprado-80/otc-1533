@@ -1,0 +1,361 @@
+LevelRewardRow < UIWidget
+  height: 44
+  background-color: alpha
+  focusable: true
+  $hover:
+    background-color: #ffffff12
+  $focus:
+    background-color: #c9a22733
+
+  Label
+    id: levelBadge
+    width: 42
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    font: verdana-11px-rounded
+    color: #ffd76aff
+    text-align: center
+    !text: tr('100')
+
+  Label
+    id: statusLabel
+    width: 64
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 8
+    font: verdana-11px-rounded
+    color: #9fd4ffff
+    text-align: right
+    !text: tr('Locked')
+
+  Label
+    id: titleLabel
+    anchors.left: levelBadge.right
+    anchors.right: statusLabel.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    margin-right: 8
+    font: verdana-11px-rounded
+    color: #e8e0c8ff
+    !text: tr('Reward')
+
+LevelRewardItemSlot < Panel
+  size: 100 110
+
+  UIWidget
+    id: itemSlot
+    size: 34 34
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 2
+    image-source: /images/ui/item
+    phantom: true
+    UIItem
+      id: item
+      size: 32 32
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      virtual: true
+      phantom: true
+      draggable: false
+
+  Label
+    id: nameLabel
+    height: 36
+    anchors.top: itemSlot.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 4
+    font: verdana-10px-rounded
+    color: #d8d0b8ff
+    text-align: center
+    text-wrap: true
+
+LevelRewardChoiceRow < UIWidget
+  height: 40
+  background-color: alpha
+  focusable: true
+  $hover:
+    background-color: #ffffff14
+  $focus:
+    background-color: #c9a22744
+
+  UIWidget
+    id: itemSlot
+    size: 34 34
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 4
+    image-source: /images/ui/item
+    phantom: true
+    UIItem
+      id: item
+      size: 32 32
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      virtual: true
+      phantom: true
+      draggable: false
+
+  Label
+    id: nameLabel
+    anchors.left: itemSlot.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 10
+    margin-right: 8
+    font: verdana-11px-rounded
+    color: #e8e0c8ff
+
+MainWindow
+  id: levelRewardWindow
+  !text: tr('Level Rewards')
+  size: 740 480
+  @onEscape: modules.game_level_reward.hide()
+
+  Label
+    id: headerTitle
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 14
+    font: verdana-11px-rounded
+    color: #ffd76aff
+    !text: tr('Milestone Rewards')
+
+  Label
+    id: headerSub
+    anchors.top: headerTitle.bottom
+    anchors.left: headerTitle.left
+    anchors.right: pendingLabel.left
+    margin-top: 4
+    margin-right: 8
+    font: verdana-11px-rounded
+    color: #a8c0a8ff
+    !text: tr('Claim bound gear when you reach special levels.')
+
+  Label
+    id: pendingLabel
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 12
+    margin-right: 48
+    font: verdana-11px-rounded
+    color: #9fd4ffff
+    !text: tr('Pending: 0')
+
+  FlatPanel
+    id: noticePanel
+    height: 54
+    anchors.top: headerSub.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 10
+    margin-left: 12
+    margin-right: 12
+    image-source: /images/ui/2pixel_up_frame_borderimage
+    image-border: 4
+
+    Label
+      id: noticeLabel
+      anchors.fill: parent
+      margin: 8 12 8 12
+      font: verdana-11px-rounded
+      color: #e8c070ff
+      text-wrap: true
+      !text: tr('Level Reward items are bound to your character. They cannot be traded. Only you can move them.')
+
+  FlatPanel
+    id: listPanel
+    width: 280
+    anchors.top: noticePanel.bottom
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    margin-top: 8
+    margin-left: 12
+    margin-bottom: 40
+    image-source: /images/ui/2pixel_up_frame_borderimage
+    image-border: 4
+
+    Label
+      id: listTitle
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 8
+      margin-left: 10
+      font: verdana-11px-rounded
+      color: #ffd76aff
+      !text: tr('Your Milestones')
+
+    TextList
+      id: rewardsList
+      anchors.top: listTitle.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin: 6 8 8 8
+      vertical-scrollbar: rewardsScroll
+      focusable: true
+      auto-focus: none
+    VerticalScrollBar
+      id: rewardsScroll
+      anchors.top: rewardsList.top
+      anchors.bottom: rewardsList.bottom
+      anchors.right: parent.right
+      margin-right: 2
+      step: 44
+      pixels-scroll: true
+
+  FlatPanel
+    id: detailPanel
+    anchors.top: noticePanel.bottom
+    anchors.left: listPanel.right
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-top: 8
+    margin-left: 8
+    margin-right: 12
+    margin-bottom: 40
+    image-source: /images/ui/2pixel_up_frame_borderimage
+    image-border: 4
+
+    Label
+      id: detailLevel
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 10
+      margin-left: 12
+      font: verdana-11px-rounded
+      color: #ffd76aff
+      !text: tr('Level -')
+
+    Label
+      id: detailStatus
+      anchors.top: detailLevel.top
+      anchors.right: parent.right
+      margin-right: 12
+      font: verdana-11px-rounded
+      color: #9fd4ffff
+      !text: tr('')
+
+    Label
+      id: detailTitle
+      anchors.top: detailLevel.bottom
+      anchors.left: detailLevel.left
+      anchors.right: parent.right
+      margin-top: 4
+      margin-right: 12
+      font: verdana-11px-rounded
+      color: #e8e0c8ff
+      !text: tr('')
+
+    Label
+      id: detailBlurb
+      anchors.top: detailTitle.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 6
+      margin-left: 12
+      margin-right: 12
+      font: verdana-11px-rounded
+      color: #a8b0a0ff
+      text-wrap: true
+      !text: tr('')
+
+    Label
+      id: itemsHeadline
+      anchors.top: detailBlurb.bottom
+      anchors.left: detailLevel.left
+      margin-top: 12
+      font: verdana-11px-rounded
+      color: #9fd4ffff
+      !text: tr('Your rewards')
+
+    Panel
+      id: itemsRow
+      height: 114
+      anchors.top: itemsHeadline.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 8
+      margin-left: 10
+      margin-right: 10
+      layout:
+        type: horizontalBox
+        spacing: 8
+
+    Label
+      id: choiceHeadline
+      anchors.top: itemsRow.bottom
+      anchors.left: detailLevel.left
+      margin-top: 8
+      font: verdana-11px-rounded
+      color: #ffd76aff
+      visible: false
+      !text: tr('Choose one weapon')
+
+    TextList
+      id: choiceRow
+      anchors.top: choiceHeadline.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: claimButton.top
+      margin-top: 6
+      margin-left: 10
+      margin-right: 10
+      margin-bottom: 8
+      visible: false
+      vertical-scrollbar: choiceScroll
+      focusable: true
+      auto-focus: none
+    VerticalScrollBar
+      id: choiceScroll
+      anchors.top: choiceRow.top
+      anchors.bottom: choiceRow.bottom
+      anchors.right: parent.right
+      margin-right: 4
+      step: 40
+      pixels-scroll: true
+      visible: false
+
+    Button
+      id: claimButton
+      size: 160 28
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-right: 12
+      margin-bottom: 10
+      font: verdana-11px-rounded
+      !text: tr('Claim Reward')
+      @onClick: modules.game_level_reward.claimSelected()
+
+    Label
+      id: emptyDetail
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      font: verdana-11px-rounded
+      color: #889088ff
+      !text: tr('Select a milestone on the left.')
+
+  Button
+    id: closeButton
+    size: 90 24
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-right: 12
+    margin-bottom: 8
+    font: verdana-11px-rounded
+    !text: tr('Close')
+    @onClick: modules.game_level_reward.hide()
+
+  Button
+    id: refreshButton
+    size: 90 24
+    anchors.bottom: parent.bottom
+    anchors.right: closeButton.left
+    margin-right: 8
+    margin-bottom: 8
+    font: verdana-11px-rounded
+    !text: tr('Refresh')
+    @onClick: modules.game_level_reward.refresh()

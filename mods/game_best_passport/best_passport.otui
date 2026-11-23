@@ -1,0 +1,621 @@
+PassportBenefitCard < FlatPanel
+  size: 250 88
+  image-source: /images/ui/2pixel_up_frame_borderimage
+  image-border: 4
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin: 8 10 0 10
+    font: verdana-11px-rounded
+    color: #ffd76aff
+    text-auto-resize: true
+    !text: tr('Benefit')
+  Label
+    id: desc
+    anchors.top: title.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin: 4 10 0 10
+    font: verdana-10px-rounded
+    color: #d0d0d0ff
+    text-wrap: true
+    text-auto-resize: true
+    !text: tr('')
+
+PassportMonsterRow < UIWidget
+  height: 36
+  background-color: alpha
+  focusable: true
+  clipping: true
+  $hover:
+    background-color: #ffffff14
+  $focus:
+    background-color: #ffffff24
+
+  UICreature
+    id: preview
+    size: 32 32
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 4
+    phantom: true
+    animate: false
+
+  Label
+    id: nameLabel
+    anchors.left: preview.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    margin-right: 6
+    font: verdana-11px-rounded
+    color: #e8e0c8ff
+    text-auto-resize: true
+
+PassportSelectedSlot < FlatPanel
+  size: 210 86
+  image-source: /images/ui/2pixel_up_frame_borderimage
+  image-border: 4
+
+  UIWidget
+    id: previewBox
+    size: 48 48
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 6
+    image-source: /images/ui/item
+    phantom: true
+    UICreature
+      id: preview
+      size: 48 48
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      phantom: true
+      animate: false
+
+  Label
+    id: nameLabel
+    anchors.left: previewBox.right
+    anchors.right: parent.right
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    margin-left: 6
+    margin-right: 6
+    margin-top: 8
+    margin-bottom: 8
+    font: verdana-10px-rounded
+    color: #ffd76aff
+    text-align: left
+    text-wrap: true
+    text-auto-resize: false
+    !text: tr('Empty slot')
+
+NewMainWindow
+  id: bestPassportWindow
+  !text: tr('Best Partner Passport')
+  size: 920 640
+  @onEscape: modules.game_best_passport.hide()
+
+  Panel
+    id: content
+    anchors.fill: parent
+    margin: 14 12 14 12
+
+    FlatPanel
+      id: headerBar
+      height: 92
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      UIWidget
+        id: badgeIcon
+        size: 32 32
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-left: 12
+        image-source: /images/game/destiny_wheel/icon-gematelier
+        phantom: true
+
+      Label
+        id: statusBig
+        anchors.left: badgeIcon.right
+        anchors.top: parent.top
+        margin-left: 10
+        margin-top: 14
+        font: sans-bold-16px
+        color: #ffd76aff
+        text-auto-resize: true
+        !text: tr('INACTIVE')
+
+      Label
+        id: statusSub
+        anchors.left: badgeIcon.right
+        anchors.top: statusBig.bottom
+        margin-left: 10
+        margin-top: 2
+        font: verdana-10px-rounded
+        color: #c8c8c8ff
+        text-auto-resize: true
+        !text: tr('Support BestServer and unlock exclusive benefits')
+
+      Label
+        id: systemTitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        margin-top: 16
+        font: Verdana Bold-13px
+        color: #ffd76aff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('Best Partner Passport')
+
+      Label
+        id: systemSubtitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: systemTitle.bottom
+        margin-top: 4
+        font: verdana-10px-rounded
+        color: #e0c070ff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('30 days of exclusive power on all characters')
+
+      Label
+        id: focusLabel
+        anchors.right: parent.right
+        anchors.top: parent.top
+        margin-right: 12
+        margin-top: 14
+        font: verdana-11px-rounded
+        color: #9fd4ffff
+        text-align: right
+        text-auto-resize: true
+        !text: tr('Hunt Focus')
+
+      ProgressBar
+        id: focusBar
+        width: 180
+        height: 14
+        anchors.right: parent.right
+        anchors.top: focusLabel.bottom
+        margin-right: 12
+        margin-top: 6
+        background-color: #6a5a20ff
+        percent: 0
+        on: true
+        !text: tr('')
+
+      Label
+        id: focusSub
+        anchors.right: parent.right
+        anchors.top: focusBar.bottom
+        margin-right: 12
+        margin-top: 2
+        font: verdana-10px-rounded
+        color: #c8c8c8ff
+        text-align: right
+        text-auto-resize: true
+        !text: tr('')
+
+    Panel
+      id: tabBar
+      height: 30
+      anchors.top: headerBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 8
+
+      Button
+        id: tabBenefits
+        size: 140 26
+        anchors.left: parent.left
+        anchors.top: parent.top
+        font: verdana-11px-rounded
+        !text: tr('Benefits')
+        @onClick: modules.game_best_passport.setTab('benefits')
+      Button
+        id: tabHunt
+        size: 160 26
+        anchors.left: prev.right
+        anchors.top: parent.top
+        margin-left: 4
+        font: verdana-11px-rounded
+        !text: tr('Private Hunt')
+        @onClick: modules.game_best_passport.setTab('hunt')
+      Button
+        id: shopButton
+        size: 120 24
+        anchors.right: refreshButton.left
+        anchors.top: parent.top
+        margin-right: 6
+        !text: tr('Get Passport')
+        @onClick: modules.game_best_passport.openShop()
+      Button
+        id: refreshButton
+        size: 90 24
+        anchors.right: parent.right
+        anchors.top: parent.top
+        !text: tr('Refresh')
+        @onClick: modules.game_best_passport.refresh()
+
+    Panel
+      id: benefitsPanel
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+
+      FlatPanel
+        id: liveBonusBar
+        height: 56
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+        Label
+          id: liveBonusTitle
+          anchors.left: parent.left
+          anchors.top: parent.top
+          margin-left: 12
+          margin-top: 8
+          font: verdana-11px-rounded
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Your active bonuses')
+        Label
+          id: liveBonusBody
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.top: liveBonusTitle.bottom
+          margin-left: 12
+          margin-right: 12
+          margin-top: 2
+          font: verdana-10px-rounded
+          color: #c8e0a8ff
+          text-wrap: true
+          text-auto-resize: true
+          !text: tr('Passport inactive - unlock to activate permanent account benefits.')
+
+      ScrollablePanel
+        id: benefitsScroll
+        anchors.top: liveBonusBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        margin-top: 8
+        vertical-scrollbar: benefitsBar
+        layout:
+          type: grid
+          cell-size: 250 92
+          cell-spacing: 8
+          num-columns: 3
+      VerticalScrollBar
+        id: benefitsBar
+        anchors.top: benefitsScroll.top
+        anchors.bottom: benefitsScroll.bottom
+        anchors.right: parent.right
+        margin-right: 2
+        step: 28
+        pixels-scroll: true
+
+    Panel
+      id: huntPanel
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+      visible: false
+
+      FlatPanel
+        id: huntStatusBar
+        height: 48
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+        Label
+          id: huntStatusLabel
+          anchors.fill: parent
+          margin: 10
+          font: verdana-11px-rounded
+          color: #e0c070ff
+          text-wrap: true
+          text-auto-resize: true
+          !text: tr('Build your private hunt below.')
+
+      FlatPanel
+        id: selectedPanel
+        height: 112
+        anchors.top: huntStatusBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-top: 6
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+        Label
+          id: selectedTitle
+          anchors.left: parent.left
+          anchors.top: parent.top
+          margin-left: 10
+          margin-top: 4
+          font: verdana-10px-rounded
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Selected monsters (1-4)')
+        Panel
+          id: selectedRow
+          anchors.top: selectedTitle.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          margin: 4 8 6 8
+          layout:
+            type: horizontalBox
+            spacing: 6
+          PassportSelectedSlot
+            id: slot1
+          PassportSelectedSlot
+            id: slot2
+          PassportSelectedSlot
+            id: slot3
+          PassportSelectedSlot
+            id: slot4
+
+      Panel
+        id: actionBar
+        height: 32
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        Button
+          id: startHuntButton
+          size: 160 28
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          font: verdana-11px-rounded
+          !text: tr('Start Hunt')
+          @onClick: modules.game_best_passport.startHunt()
+        Button
+          id: joinHuntButton
+          size: 140 28
+          anchors.left: startHuntButton.right
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 8
+          !text: tr('Join Hunt')
+          @onClick: modules.game_best_passport.joinHunt()
+        Button
+          id: leaveHuntButton
+          size: 140 28
+          anchors.left: joinHuntButton.right
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 8
+          !text: tr('Leave Hunt')
+          @onClick: modules.game_best_passport.leaveHunt()
+        Button
+          id: guideButton
+          size: 120 28
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          !text: tr('Hunt Guide')
+          @onClick: modules.game_best_passport.openGuide()
+
+      FlatPanel
+        id: optionsPanel
+        width: 360
+        anchors.top: selectedPanel.bottom
+        anchors.right: parent.right
+        anchors.bottom: actionBar.top
+        margin-top: 6
+        margin-bottom: 6
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+
+        Label
+          id: diffTitle
+          anchors.top: parent.top
+          anchors.left: parent.left
+          margin-top: 8
+          margin-left: 10
+          font: verdana-11px-rounded
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Difficulty')
+        Button
+          id: diffNoob
+          size: 100 24
+          anchors.top: diffTitle.bottom
+          anchors.left: parent.left
+          margin-top: 6
+          margin-left: 10
+          !text: tr('Noob (30)')
+          @onClick: modules.game_best_passport.setDifficulty('noob')
+        Button
+          id: diffNormal
+          size: 110 24
+          anchors.top: diffNoob.top
+          anchors.left: diffNoob.right
+          margin-left: 6
+          !text: tr('Normal (100)')
+          @onClick: modules.game_best_passport.setDifficulty('normal')
+        Button
+          id: diffHard
+          size: 120 24
+          anchors.top: diffNoob.top
+          anchors.left: diffNormal.right
+          margin-left: 6
+          !text: tr('Hardcore (200)')
+          @onClick: modules.game_best_passport.setDifficulty('hardcore')
+
+        Label
+          id: respawnTitle
+          anchors.top: diffNoob.bottom
+          anchors.left: parent.left
+          margin-top: 14
+          margin-left: 10
+          font: verdana-11px-rounded
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Respawn')
+        Button
+          id: respawnNormal
+          size: 120 24
+          anchors.top: respawnTitle.bottom
+          anchors.left: parent.left
+          margin-top: 6
+          margin-left: 10
+          !text: tr('60 seconds')
+          @onClick: modules.game_best_passport.setRespawn('normal')
+        Button
+          id: respawnSlow
+          size: 120 24
+          anchors.top: respawnNormal.top
+          anchors.left: respawnNormal.right
+          margin-left: 6
+          !text: tr('120 seconds')
+          @onClick: modules.game_best_passport.setRespawn('slow')
+
+        Label
+          id: optionsHint
+          anchors.bottom: parent.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          margin: 8 10 8 10
+          font: verdana-10px-rounded
+          color: #a8c0a8ff
+          text-wrap: true
+          text-auto-resize: true
+          !text: tr('Create in PZ out of combat. Party members use Join.')
+
+      FlatPanel
+        id: monsterBrowser
+        anchors.top: selectedPanel.bottom
+        anchors.left: parent.left
+        anchors.right: optionsPanel.left
+        anchors.bottom: actionBar.top
+        margin-top: 6
+        margin-right: 8
+        margin-bottom: 6
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+
+        Panel
+          id: letterBar
+          height: 22
+          anchors.top: parent.top
+          anchors.left: parent.left
+          anchors.right: parent.right
+          margin-top: 6
+          margin-left: 6
+          margin-right: 6
+          clipping: true
+          layout:
+            type: horizontalBox
+            spacing: 1
+
+        Button
+          id: clearSelectButton
+          size: 64 22
+          anchors.top: letterBar.bottom
+          anchors.right: parent.right
+          margin-top: 6
+          margin-right: 8
+          !text: tr('Clear')
+          @onClick: modules.game_best_passport.clearSelection()
+        Button
+          id: searchButton
+          size: 64 22
+          anchors.top: letterBar.bottom
+          anchors.right: clearSelectButton.left
+          margin-top: 6
+          margin-right: 4
+          !text: tr('Search')
+          @onClick: modules.game_best_passport.doSearch()
+        TextEdit
+          id: searchEdit
+          height: 22
+          anchors.top: letterBar.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          margin-top: 6
+          margin-left: 8
+          // leave room for Search (64+4) + Clear (64+8)
+          margin-right: 140
+          @onTextChange: modules.game_best_passport.onSearchChanged()
+
+        Button
+          id: addMonsterButton
+          size: 120 22
+          anchors.bottom: parent.bottom
+          anchors.left: parent.left
+          margin-left: 8
+          margin-bottom: 6
+          !text: tr('Add Monster')
+          @onClick: modules.game_best_passport.addSelectedMonster()
+        Button
+          id: prevPageButton
+          size: 60 22
+          anchors.bottom: parent.bottom
+          anchors.right: nextPageButton.left
+          margin-right: 4
+          margin-bottom: 6
+          !text: tr('Prev')
+          @onClick: modules.game_best_passport.prevPage()
+        Button
+          id: nextPageButton
+          size: 60 22
+          anchors.bottom: parent.bottom
+          anchors.right: parent.right
+          margin-right: 8
+          margin-bottom: 6
+          !text: tr('Next')
+          @onClick: modules.game_best_passport.nextPage()
+
+        TextList
+          id: monstersList
+          anchors.top: searchEdit.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: addMonsterButton.top
+          margin: 6 18 6 8
+          vertical-scrollbar: monstersScroll
+          focusable: true
+          auto-focus: none
+          @onDoubleClick: modules.game_best_passport.addSelectedMonster()
+        VerticalScrollBar
+          id: monstersScroll
+          anchors.top: monstersList.top
+          anchors.bottom: monstersList.bottom
+          anchors.right: parent.right
+          margin-right: 2
+          step: 36
+          pixels-scroll: true
+
+    Button
+      id: closeButton
+      !text: tr('Close')
+      width: 80
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-bottom: -2
+      @onClick: modules.game_best_passport.hide()
+
+  UIWidget
+    id: crest
+    size: 145 56
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: -33
+    image-source: /images/game/tutorial/backdrop_crest
+    phantom: true

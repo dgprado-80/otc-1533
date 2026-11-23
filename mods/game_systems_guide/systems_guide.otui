@@ -1,0 +1,236 @@
+SystemsGuideTopicRow < UIWidget
+  height: 26
+  focusable: true
+  background-color: alpha
+  $hover:
+    background-color: #ffffff14
+  $focus:
+    background-color: #ffffff28
+
+  Label
+    id: title
+    anchors.fill: parent
+    margin-left: 8
+    margin-right: 4
+    font: verdana-11px-rounded
+    color: #e8e0c8ff
+    text-align: left
+    text-auto-resize: true
+
+NewMainWindow
+  id: systemsGuideWindow
+  !text: tr('BestServerOt Systems')
+  size: 900 640
+  @onEscape: modules.game_systems_guide.hide()
+
+  Panel
+    id: contentPanel
+    anchors.fill: parent
+    margin: 10
+
+    Label
+      id: headerLabel
+      !text: tr('Custom Systems Guide')
+      font: Verdana Bold-13px
+      color: #ffd76aff
+      anchors.top: parent.top
+      anchors.left: parent.left
+      text-auto-resize: true
+
+    Label
+      id: subHeader
+      !text: tr('Learn how BestServerOt exclusive systems work.')
+      font: verdana-10px-rounded
+      color: #a8a8a8ff
+      anchors.top: headerLabel.bottom
+      anchors.left: parent.left
+      margin-top: 2
+      text-auto-resize: true
+
+    Button
+      id: langEnButton
+      size: 44 20
+      !text: tr('EN')
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 14
+      font: verdana-10px-rounded
+      @onClick: modules.game_systems_guide.setLanguage('en')
+
+    Button
+      id: langPtButton
+      size: 54 20
+      !text: tr('PT-BR')
+      anchors.top: langEnButton.top
+      anchors.right: langEnButton.left
+      margin-right: 4
+      font: verdana-10px-rounded
+      @onClick: modules.game_systems_guide.setLanguage('pt')
+
+    UIWidget
+      id: brandLogo
+      size: 48 48
+      image-source: /images/ui/logo
+      image-smooth: true
+      phantom: true
+      anchors.top: parent.top
+      anchors.right: langPtButton.left
+      margin-right: 8
+      margin-top: -2
+
+    HorizontalSeparator
+      id: topSep
+      anchors.top: brandLogo.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 6
+
+    FlatPanel
+      id: topicPanel
+      width: 210
+      anchors.top: topSep.bottom
+      anchors.bottom: bottomSep.top
+      anchors.left: parent.left
+      margin-top: 8
+      margin-bottom: 8
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      Label
+        id: topicTitle
+        !text: tr('Topics')
+        font: verdana-11px-rounded
+        color: #ffd76aff
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin-top: 8
+        margin-left: 10
+        text-auto-resize: true
+
+      TextList
+        id: topicList
+        anchors.top: topicTitle.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-top: 6
+        margin-bottom: 6
+        margin-left: 4
+        margin-right: 4
+        vertical-scrollbar: topicScroll
+        @onChildFocusChange: modules.game_systems_guide.onTopicSelected()
+
+      VerticalScrollBar
+        id: topicScroll
+        anchors.top: topicList.top
+        anchors.bottom: topicList.bottom
+        anchors.right: topicList.right
+        step: 28
+        pixels-scroll: true
+
+    FlatPanel
+      id: articlePanel
+      anchors.top: topSep.bottom
+      anchors.bottom: bottomSep.top
+      anchors.left: topicPanel.right
+      anchors.right: parent.right
+      margin-top: 8
+      margin-bottom: 8
+      margin-left: 8
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      Label
+        id: articleTitle
+        !text: tr('Select a topic')
+        font: Verdana Bold-13px
+        color: #ffd76aff
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-top: 10
+        margin-left: 12
+        margin-right: 12
+        text-auto-resize: true
+
+      Label
+        id: articleTag
+        !text: ''
+        font: verdana-10px-rounded
+        color: #9fd4ffff
+        anchors.top: articleTitle.bottom
+        anchors.left: parent.left
+        margin-top: 2
+        margin-left: 12
+        text-auto-resize: true
+
+      HorizontalSeparator
+        id: articleSep
+        anchors.top: articleTag.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-top: 8
+        margin-left: 10
+        margin-right: 10
+
+      VerticalScrollBar
+        id: articleScroll
+        anchors.top: articleSep.bottom
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        margin-top: 8
+        margin-bottom: 8
+        margin-right: 4
+        step: 20
+        pixels-scroll: true
+
+      ScrollablePanel
+        id: articleScrollPanel
+        anchors.top: articleSep.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: articleScroll.left
+        margin-top: 8
+        margin-bottom: 8
+        margin-left: 12
+        margin-right: 4
+        vertical-scrollbar: articleScroll
+        padding: 0
+
+        Label
+          id: articleBody
+          width: 500
+          font: verdana-11px-rounded
+          color: #e0e0e0ff
+          text-wrap: true
+          text-auto-resize: true
+          text-align: topLeft
+          anchors.top: parent.top
+          anchors.left: parent.left
+          anchors.right: parent.right
+
+
+    HorizontalSeparator
+      id: bottomSep
+      anchors.bottom: parent.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-bottom: 28
+
+    Button
+      id: closeButton
+      size: 70 20
+      !text: tr('Close')
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      @onClick: modules.game_systems_guide.hide()
+
+    Label
+      id: footerHint
+      !text: tr('Tip: open anytime from the Guide button.')
+      font: verdana-10px-rounded
+      color: #888888ff
+      anchors.bottom: parent.bottom
+      anchors.left: parent.left
+      margin-bottom: 4
+      text-auto-resize: true

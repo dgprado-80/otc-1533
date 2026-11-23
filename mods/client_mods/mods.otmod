@@ -10,3 +10,15 @@ Module
     - client_textedit
     - game_memorial
     - game_search_locker
+    - game_sidebuttons
+    - game_command_bridge
+    - game_craft
+    - game_upgrade_stones
+    - game_skill_perks
+    - game_best_passport
+    - game_best_tasks
+    - game_tasks
+    - game_level_reward
+    - game_streamershop
+    - game_refund
+    - game_systems_guide

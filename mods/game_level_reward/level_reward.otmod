@@ -1,0 +1,9 @@
+Module
+  name: game_level_reward
+  description: Level Rewards window (claim bound gear at milestone levels)
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1054
+  scripts: [ level_reward ]
+  @onLoad: init()
+  @onUnload: terminate()

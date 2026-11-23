@@ -1,0 +1,9 @@
+Module
+  name: game_best_passport
+  description: Best Partner Passport window (benefits + private hunt builder)
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1053
+  scripts: [ best_passport ]
+  @onLoad: init()
+  @onUnload: terminate()

@@ -97,8 +97,14 @@ end
 
 local function load(version)
 	local errorList = {}
-	-- CrystalOTC: per-version assets (/things/1530/), not /things/assets/
-	local THINGS_ASSETS_PATH = "/things/" .. version .. "/"
+	-- CrystalOTC: per-version assets (/things/<version>/). Winter 15.33 reuses 15.30
+	-- assets until a dedicated pack is shipped.
+	local assetsVersion = version
+	if version == 1533 and not g_resources.directoryExists("/things/1533") and g_resources.directoryExists("/things/1530") then
+		assetsVersion = 1530
+		g_logger.info("[game_things.load()] client 1533 using fallback assets from /things/1530/")
+	end
+	local THINGS_ASSETS_PATH = "/things/" .. assetsVersion .. "/"
 
 	if version >= 1281 and not g_game.getFeature(GameLoadSprInsteadProtobuf) then
 		local filePath = resolvepath(THINGS_ASSETS_PATH)
@@ -108,7 +114,7 @@ local function load(version)
 		end
 
 		if not g_things.loadStaticData(filePath) then
-			errorList[#errorList + 1] = "Couldn't load staticdata"
+			g_logger.warning(string.format("[game_things.load()] Could not parse staticdata from '%s'. Sprites stay loaded.", filePath))
 		end
 
 		if g_things.loadStaticMapData then
@@ -169,6 +175,13 @@ local function load(version)
 		messageBox:raise()
 		messageBox:focus()
 	end)
+
+	-- 15.x assets live in /things/<version>/. Falling back to version 0 makes the
+	-- client ask for /things/0/Tibia.dat and hides the real load error.
+	if version >= 1281 then
+		return
+	end
+
 	g_game.setClientVersion(0)
 	g_game.setProtocolVersion(0)
 end

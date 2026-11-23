@@ -4,10 +4,18 @@ package otclient.protobuf.staticdata;
 
 message Staticdata {
 	repeated Creature monsters = 1;
-	repeated Achievement achievements = 2;
-	repeated House houses = 3;
-	repeated Creature bosses = 4;
-	repeated Quest quests = 5;
+	repeated BestiaryClass bestiary_classes = 2;
+	repeated Achievement achievements = 3;
+	repeated House houses = 4;
+	repeated Creature bosses = 5;
+	repeated Quest quests = 6;
+}
+
+// 15.30 inserts the bestiary class list (Amphibic, Mammal, ...) before
+// achievements, which shifts houses, bosses and quests one field forward.
+message BestiaryClass {
+	optional uint32 id = 1;
+	optional string name = 2;
 }
 
 message Outfit {
@@ -28,6 +36,10 @@ message Creature {
 	optional uint32 raceId = 1;
 	optional string name = 2;
 	optional Outfit outfit = 3;
+	optional uint32 category = 4;
+	optional uint32 unknown5 = 5;
+	optional uint32 unknown6 = 6;
+	optional uint32 unknown7 = 7;
 }
 
 message Achievement {

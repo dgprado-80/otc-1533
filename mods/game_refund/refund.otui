@@ -1,0 +1,170 @@
+NewMainWindow
+  id: refundWindow
+  !text: tr('Season Refund')
+  size: 560 400
+  @onEscape: modules.game_refund.hide()
+
+  Panel
+    id: content
+    anchors.fill: parent
+    margin: 14 12 14 12
+
+    FlatPanel
+      id: header
+      height: 62
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      Label
+        id: subtitle
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: langButton.left
+        margin: 8 8 8 12
+        text-align: left
+        font: verdana-10px-rounded
+        color: #d0d0d0ff
+        text-wrap: true
+        text-auto-resize: false
+        !text: tr('Claim Premium Points and Best Partner Passport days from the previous season.')
+
+      Button
+        id: langButton
+        size: 58 22
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        margin-right: 10
+        text: PT-BR
+        image-source: /images/ui/buttons-blue
+        image-clip: 0 0 22 20
+        image-border: 3
+        !tooltip: tr('Switch language')
+        @onClick: modules.game_refund.toggleLanguage()
+
+    FlatPanel
+      id: pointsCard
+      height: 89
+      anchors.top: header.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 10
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      Label
+        id: pointsTitle
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin: 9 10 0 10
+        font: verdana-11px-rounded
+        color: #ffd76aff
+        !text: tr('Premium Points')
+
+      Label
+        id: pointsLabel
+        anchors.top: pointsTitle.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: claimPoints.left
+        margin: 5 10 8 10
+        font: verdana-10px-rounded
+        color: #e0e0e0ff
+        text-align: left
+        text-wrap: true
+        text-auto-resize: false
+        !text: tr('Loading refund data...')
+
+      Button
+        id: claimPoints
+        size: 116 24
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        margin-right: 12
+        text: Claim points
+        image-source: /images/ui/buttons-blue
+        image-clip: 0 0 22 20
+        image-border: 3
+        @onClick: modules.game_refund.claimPoints()
+
+    FlatPanel
+      id: passportCard
+      height: 82
+      anchors.top: pointsCard.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 8
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      Label
+        id: passportTitle
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin: 9 10 0 10
+        font: verdana-11px-rounded
+        color: #ffd76aff
+        !text: tr('Best Partner Passport')
+
+      Label
+        id: passportLabel
+        anchors.top: passportTitle.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: claimPassport.left
+        margin: 5 10 8 10
+        font: verdana-10px-rounded
+        color: #e0e0e0ff
+        text-align: left
+        text-wrap: true
+        text-auto-resize: false
+        !text: tr('Loading refund data...')
+
+      Button
+        id: claimPassport
+        size: 116 24
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        margin-right: 12
+        text: Claim days
+        image-source: /images/ui/buttons-blue
+        image-clip: 0 0 22 20
+        image-border: 3
+        @onClick: modules.game_refund.claimPassport()
+
+    Label
+      id: instructions
+      height: 52
+      anchors.top: passportCard.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 12
+      font: verdana-10px-rounded
+      color: #b8b8b8ff
+      text-wrap: true
+      text-auto-resize: false
+      !text: tr('Premium Points: claim up to 1,000 points every 5 days. Passport days: claim all available days at once. Refunds are linked to your account, not your character.')
+
+    Label
+      id: message
+      height: 28
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: closeButton.top
+      margin-bottom: 8
+      font: verdana-10px-rounded
+      color: #e0e0e0ff
+      text-align: center
+      text-wrap: true
+      text-auto-resize: false
+
+    Button
+      id: closeButton
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      size: 90 24
+      text: Close
+      @onClick: modules.game_refund.hide()

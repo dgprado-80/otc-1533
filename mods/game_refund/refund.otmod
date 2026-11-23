@@ -1,0 +1,9 @@
+Module
+  name: game_refund
+  description: Premium Points and Best Partner Passport refund window
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1054
+  scripts: [ refund ]
+  @onLoad: init()
+  @onUnload: terminate()

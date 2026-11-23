@@ -1,0 +1,9 @@
+Module
+  name: game_best_tasks
+  description: Best Tasks window (rooms, progress, bonuses, token outfit shop)
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1050
+  scripts: [ best_tasks ]
+  @onLoad: init()
+  @onUnload: terminate()

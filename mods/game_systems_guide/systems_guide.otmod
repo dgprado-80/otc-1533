@@ -1,0 +1,9 @@
+Module
+  name: game_systems_guide
+  description: BestServerOt custom systems guide (PT-BR / EN)
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1056
+  scripts: [ systems_guide ]
+  @onLoad: init()
+  @onUnload: terminate()

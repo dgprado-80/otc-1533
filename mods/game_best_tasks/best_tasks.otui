@@ -1,0 +1,670 @@
+BestTaskListLabel < Label
+  height: 26
+  background-color: alpha
+  text-offset: 8 0
+  text-align: left
+  font: verdana-11px-rounded
+  color: #e8e0c8ff
+  focusable: true
+  $hover:
+    background-color: #ffffff14
+  $focus:
+    background-color: #ffffff24
+    color: #ffd76aff
+
+BestTaskBonusCard < Panel
+  size: 132 250
+  image-source: /images/ui/2pixel_up_frame_borderimage
+  image-border: 4
+  focusable: true
+  clipping: false
+
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 6
+    font: verdana-11px-rounded
+    color: #fff0c7ff
+    text-align: center
+    text-auto-resize: true
+    !text: tr('Bonus')
+
+  UIWidget
+    id: art
+    size: 112 168
+    anchors.top: title.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 4
+    image-source: /images/game/best_tasks/bonus_capacity
+    phantom: true
+
+  Panel
+    id: statsPanel
+    height: 34
+    anchors.top: art.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 4
+    margin-left: 6
+    margin-right: 6
+    background-color: #0a0d14dd
+
+  Label
+    id: value
+    anchors.top: statsPanel.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 2
+    font: verdana-11px-rounded
+    color: #ffd76aff
+    text-align: center
+    text-auto-resize: true
+    !text: '+0%'
+
+  Label
+    id: hint
+    anchors.top: value.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 0
+    font: verdana-10px-rounded
+    color: #d0d0d0ff
+    text-align: center
+    text-auto-resize: true
+    !text: tr('')
+
+  Button
+    id: investButton
+    size: 116 24
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 6
+    font: Verdana Bold-11px
+    color: #ffffffff
+    !text: tr('Invest +1%')
+
+BestTaskOutfitCard < UIWidget
+  size: 150 210
+  image-source: /images/ui/2pixel_up_frame_borderimage
+  image-border: 4
+  UICreature
+    id: preview
+    size: 64 64
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 12
+    animate: false
+  Label
+    id: nameLabel
+    anchors.top: preview.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 6
+    font: verdana-11px-rounded
+    color: #ffd76aff
+    text-auto-resize: true
+  Button
+    id: buyBase
+    size: 120 20
+    anchors.top: nameLabel.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 10
+    !text: tr('Base')
+  Button
+    id: buyAddon1
+    size: 120 20
+    anchors.top: buyBase.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 4
+    !text: tr('Addon 1')
+  Button
+    id: buyAddon2
+    size: 120 20
+    anchors.top: buyAddon1.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 4
+    !text: tr('Addon 2')
+
+NewMainWindow
+  id: bestTasksWindow
+  !text: tr('Best Tasks')
+  size: 860 600
+  @onEscape: modules.game_best_tasks.hide()
+
+  Panel
+    id: content
+    anchors.fill: parent
+    margin: 14 12 14 12
+
+    FlatPanel
+      id: headerBar
+      height: 86
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      Label
+        id: activeTitle
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 12
+        margin-top: 10
+        font: Verdana Bold-13px
+        color: #ffd76aff
+        !text: tr('No active task')
+        text-auto-resize: true
+
+      Label
+        id: activeProgress
+        anchors.left: parent.left
+        anchors.top: activeTitle.bottom
+        margin-left: 12
+        margin-top: 4
+        font: verdana-10px-rounded
+        color: #c8c8c8ff
+        !text: tr('Choose a room and accept a hunt')
+        text-auto-resize: true
+
+      ProgressBar
+        id: activeProgressBar
+        width: 280
+        height: 14
+        anchors.left: parent.left
+        anchors.top: activeProgress.bottom
+        margin-left: 12
+        margin-top: 6
+        background-color: #2a6a2aff
+        percent: 0
+        on: true
+        !text: tr('')
+
+      Label
+        id: systemTitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        margin-top: 16
+        font: Verdana Bold-13px
+        color: #ffd76aff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('Best Task System')
+
+      Label
+        id: systemSubtitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: systemTitle.bottom
+        margin-top: 4
+        font: verdana-10px-rounded
+        color: #c0c0c0ff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('Hunt rooms | Invest bonuses | Token shop')
+
+      Button
+        id: headerCancelButton
+        size: 100 22
+        anchors.right: pointsPanel.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-right: 10
+        visible: false
+        !text: tr('Cancel Task')
+        @onClick: modules.game_best_tasks.abandonTask()
+
+      Button
+        id: headerClaimButton
+        size: 110 22
+        anchors.right: pointsPanel.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-right: 10
+        visible: false
+        !text: tr('Claim Reward')
+        @onClick: modules.game_best_tasks.claimReward()
+
+      Panel
+        id: pointsPanel
+        width: 150
+        height: 64
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        margin-right: 10
+
+        UIWidget
+          id: pointsIcon
+          size: 18 18
+          anchors.left: parent.left
+          anchors.top: parent.top
+          margin-top: 8
+          image-source: /images/game/battlepass/gold-icon
+          phantom: true
+
+        Label
+          id: pointsLabel
+          anchors.left: pointsIcon.right
+          anchors.verticalCenter: pointsIcon.verticalCenter
+          margin-left: 6
+          font: verdana-11px-rounded
+          color: #9fd4ffff
+          text-auto-resize: true
+          !text: tr('Best Points: 0')
+
+        UIWidget
+          id: tokensIcon
+          size: 18 18
+          anchors.left: parent.left
+          anchors.top: pointsIcon.bottom
+          margin-top: 10
+          image-source: /images/game/cyclopedia/icons/icon-goldcoin
+          phantom: true
+
+        Label
+          id: tokensLabel
+          anchors.left: tokensIcon.right
+          anchors.verticalCenter: tokensIcon.verticalCenter
+          margin-left: 6
+          font: verdana-11px-rounded
+          color: #e0c070ff
+          text-auto-resize: true
+          !text: tr('Tokens: 0')
+
+    Panel
+      id: tabBar
+      height: 30
+      anchors.top: headerBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 8
+
+      Button
+        id: tabRooms
+        size: 110 26
+        anchors.left: parent.left
+        anchors.top: parent.top
+        font: verdana-11px-rounded
+        !text: tr('Rooms')
+        @onClick: modules.game_best_tasks.setTab('rooms')
+      Button
+        id: tabBonuses
+        size: 110 26
+        anchors.left: prev.right
+        anchors.top: parent.top
+        margin-left: 4
+        font: verdana-11px-rounded
+        !text: tr('Bonuses')
+        @onClick: modules.game_best_tasks.setTab('bonuses')
+      Button
+        id: tabShop
+        size: 140 26
+        anchors.left: prev.right
+        anchors.top: parent.top
+        margin-left: 4
+        font: verdana-11px-rounded
+        !text: tr('Token Shop')
+        @onClick: modules.game_best_tasks.setTab('shop')
+
+      TextEdit
+        id: searchEdit
+        size: 180 22
+        anchors.right: searchButton.left
+        anchors.top: parent.top
+        margin-right: 4
+        @onTextChange: modules.game_best_tasks.onSearchChanged()
+      Button
+        id: searchButton
+        size: 70 22
+        anchors.right: parent.right
+        anchors.top: parent.top
+        !text: tr('Search')
+        @onClick: modules.game_best_tasks.doSearch()
+
+    Panel
+      id: roomsPanel
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+
+      FlatPanel
+        id: detailsPanel
+        width: 270
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+
+        Label
+          id: detailsTitle
+          anchors.top: parent.top
+          anchors.left: parent.left
+          anchors.right: parent.right
+          margin: 10 10 0 10
+          font: Verdana Bold-13px
+          color: #ffd76aff
+          !text: tr('Details')
+          text-auto-resize: true
+
+        Panel
+          id: rewardIcons
+          height: 40
+          anchors.bottom: acceptButton.top
+          anchors.left: parent.left
+          anchors.right: parent.right
+          margin-left: 10
+          margin-right: 10
+          margin-bottom: 8
+
+          UIWidget
+            id: rewardGoldSlot
+            size: 34 34
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            image-source: /images/ui/item
+            phantom: true
+            UIItem
+              id: item
+              size: 32 32
+              anchors.horizontalCenter: parent.horizontalCenter
+              anchors.verticalCenter: parent.verticalCenter
+              virtual: true
+              phantom: true
+              draggable: false
+
+          Label
+            id: rewardGoldLabel
+            anchors.left: rewardGoldSlot.right
+            anchors.verticalCenter: rewardGoldSlot.verticalCenter
+            margin-left: 6
+            font: verdana-10px-rounded
+            color: #e0c070ff
+            text-auto-resize: true
+            !text: tr('0 gold')
+
+          UIWidget
+            id: rewardTokenSlot
+            size: 34 34
+            anchors.right: rewardTokenLabel.left
+            anchors.verticalCenter: parent.verticalCenter
+            margin-right: 4
+            image-source: /images/ui/item
+            phantom: true
+            UIItem
+              id: item
+              size: 32 32
+              anchors.horizontalCenter: parent.horizontalCenter
+              anchors.verticalCenter: parent.verticalCenter
+              virtual: true
+              phantom: true
+              draggable: false
+
+          Label
+            id: rewardTokenLabel
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            font: verdana-10px-rounded
+            color: #9fd4ffff
+            text-auto-resize: true
+            !text: tr('0 tokens')
+
+        Label
+          id: detailsBody
+          anchors.top: detailsTitle.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: rewardIcons.top
+          margin: 8 10 6 10
+          font: verdana-11px-rounded
+          color: #d0d0d0ff
+          text-wrap: true
+          text-auto-resize: false
+          text-align: topLeft
+          !text: tr('Select a task to view rewards and creatures.')
+
+        Button
+          id: acceptButton
+          size: 230 26
+          anchors.bottom: abandonButton.top
+          anchors.horizontalCenter: parent.horizontalCenter
+          margin-bottom: 4
+          font: verdana-11px-rounded
+          !text: tr('Accept Task')
+          @onClick: modules.game_best_tasks.acceptTask()
+        Button
+          id: abandonButton
+          size: 230 26
+          anchors.bottom: claimButton.top
+          anchors.horizontalCenter: parent.horizontalCenter
+          margin-bottom: 4
+          !text: tr('Cancel Task')
+          @onClick: modules.game_best_tasks.abandonTask()
+        Button
+          id: claimButton
+          size: 230 26
+          anchors.bottom: parent.bottom
+          anchors.horizontalCenter: parent.horizontalCenter
+          margin-bottom: 10
+          font: verdana-11px-rounded
+          !text: tr('Claim Reward')
+          @onClick: modules.game_best_tasks.claimReward()
+
+      FlatPanel
+        id: roomsListPanel
+        width: 210
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+        Label
+          id: roomsTitle
+          anchors.top: parent.top
+          anchors.left: parent.left
+          margin-top: 8
+          margin-left: 10
+          font: verdana-11px-rounded
+          color: #ffd76aff
+          !text: tr('Rooms')
+          text-auto-resize: true
+        TextList
+          id: roomsList
+          anchors.top: roomsTitle.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          margin: 6 6 8 6
+          vertical-scrollbar: roomsScroll
+          focusable: true
+          @onChildFocusChange: modules.game_best_tasks.onRoomSelected()
+        VerticalScrollBar
+          id: roomsScroll
+          anchors.top: roomsList.top
+          anchors.bottom: roomsList.bottom
+          anchors.right: parent.right
+          margin-right: 2
+          step: 16
+          pixels-scroll: true
+
+      FlatPanel
+        id: taskListPanel
+        anchors.top: parent.top
+        anchors.left: roomsListPanel.right
+        anchors.right: detailsPanel.left
+        anchors.bottom: parent.bottom
+        margin-left: 6
+        margin-right: 6
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+        Label
+          id: tasksTitle
+          anchors.top: parent.top
+          anchors.left: parent.left
+          margin-top: 8
+          margin-left: 10
+          font: verdana-11px-rounded
+          color: #ffd76aff
+          !text: tr('Tasks')
+          text-auto-resize: true
+        TextList
+          id: tasksList
+          anchors.top: tasksTitle.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          margin: 6 6 8 6
+          vertical-scrollbar: tasksScroll
+          focusable: true
+          @onChildFocusChange: modules.game_best_tasks.onTaskSelected()
+        VerticalScrollBar
+          id: tasksScroll
+          anchors.top: tasksList.top
+          anchors.bottom: tasksList.bottom
+          anchors.right: parent.right
+          margin-right: 2
+          step: 16
+          pixels-scroll: true
+
+    Panel
+      id: bonusesPanel
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+      visible: false
+
+      FlatPanel
+        anchors.fill: parent
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+
+        Label
+          id: bonusesHeadline
+          anchors.top: parent.top
+          anchors.left: parent.left
+          margin-top: 12
+          margin-left: 14
+          font: Verdana Bold-13px
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Best Points Bonuses')
+
+        Label
+          id: bonusesSummary
+          anchors.top: bonusesHeadline.bottom
+          anchors.left: parent.left
+          margin-top: 6
+          margin-left: 14
+          font: verdana-11px-rounded
+          color: #9fd4ffff
+          text-auto-resize: true
+          !text: tr('Unspent: 0  |  Invested: 0  |  Level: 0')
+
+        Button
+          id: respecButton
+          size: 190 22
+          anchors.top: bonusesHeadline.top
+          anchors.right: parent.right
+          margin-top: 10
+          margin-right: 14
+          font: verdana-10px-rounded
+          !text: tr('Respec (10 Premium Points)')
+          !tooltip: tr('Reset invested bonuses. Costs Premium Points.')
+          @onClick: modules.game_best_tasks.respecBonuses()
+
+        Panel
+          id: bonusesCards
+          height: 258
+          anchors.top: bonusesSummary.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          margin-top: 12
+          margin-left: 14
+          margin-right: 14
+          layout:
+            type: horizontalBox
+            spacing: 8
+
+        Label
+          id: bonusesBody
+          anchors.top: bonusesCards.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          margin: 16 14 14 14
+          font: verdana-10px-rounded
+          color: #b8b8b8ff
+          text-wrap: true
+          text-auto-resize: true
+
+    Panel
+      id: shopPanel
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+      visible: false
+
+      FlatPanel
+        anchors.fill: parent
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+        Label
+          id: shopInfo
+          anchors.top: parent.top
+          anchors.left: parent.left
+          margin-top: 10
+          margin-left: 12
+          font: verdana-11px-rounded
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Spend Task Tokens on exclusive outfits')
+        Button
+          id: previewLink
+          size: 160 22
+          anchors.top: parent.top
+          anchors.right: parent.right
+          margin-top: 8
+          margin-right: 10
+          !text: tr('Preview Online')
+          @onClick: modules.game_best_tasks.openShopPreview()
+        ScrollablePanel
+          id: outfitsScroll
+          anchors.top: shopInfo.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          margin: 12 8 10 8
+          vertical-scrollbar: outfitsBar
+          layout:
+            type: horizontalBox
+            spacing: 10
+        VerticalScrollBar
+          id: outfitsBar
+          anchors.top: outfitsScroll.top
+          anchors.bottom: outfitsScroll.bottom
+          anchors.right: parent.right
+          margin-right: 2
+          step: 28
+          pixels-scroll: true
+
+    Button
+      id: closeButton
+      !text: tr('Close')
+      width: 80
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-bottom: -2
+      @onClick: modules.game_best_tasks.hide()
+
+  UIWidget
+    id: crest
+    size: 145 56
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: -33
+    image-source: /images/game/tutorial/backdrop_crest
+    phantom: true

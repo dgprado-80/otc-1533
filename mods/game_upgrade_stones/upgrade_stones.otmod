@@ -1,0 +1,9 @@
+Module
+  name: game_upgrade_stones
+  description: Upgrade Stones window (craft runes + spell damage upgrades)
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1051
+  scripts: [ upgrade_stones ]
+  @onLoad: init()
+  @onUnload: terminate()

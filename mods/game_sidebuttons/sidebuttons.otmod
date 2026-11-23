@@ -1,0 +1,8 @@
+Module
+  name: game_sidebuttons
+  description: BestServer custom system side buttons (bridge for game_mainpanel)
+  sandboxed: true
+  autoload-priority: 1000
+  scripts: [ sidebuttons ]
+  @onLoad: init()
+  @onUnload: terminate()

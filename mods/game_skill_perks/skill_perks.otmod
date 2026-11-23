@@ -1,0 +1,9 @@
+Module
+  name: game_skill_perks
+  description: Skills & Perks window (Exalted Core upgrades)
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1052
+  scripts: [ skill_perks ]
+  @onLoad: init()
+  @onUnload: terminate()

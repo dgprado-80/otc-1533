@@ -1,0 +1,374 @@
+SkillPerkRow < FlatPanel
+  height: 58
+  image-source: /images/ui/2pixel_up_frame_borderimage
+  image-border: 4
+  background-color: #151b25cc
+  focusable: true
+  margin-bottom: 4
+  $hover:
+    background-color: #24334ccc
+  $focus:
+    background-color: #304867cc
+
+  UIWidget
+    id: iconSlot
+    size: 52 52
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 6
+    image-source: /images/ui/item
+    phantom: true
+    UIItem
+      id: item
+      size: 42 42
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      virtual: true
+      phantom: true
+      draggable: false
+      visible: false
+    UIWidget
+      id: icon
+      size: 42 42
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      image-smooth: true
+      phantom: true
+
+  Label
+    id: nameLabel
+    anchors.left: iconSlot.right
+    anchors.top: parent.top
+    margin-left: 9
+    margin-top: 5
+    font: Verdana Bold-13px
+    color: #ffd76aff
+    text-auto-resize: true
+
+  Label
+    id: bonusLabel
+    anchors.left: iconSlot.right
+    anchors.top: nameLabel.bottom
+    margin-left: 9
+    margin-top: 2
+    font: verdana-10px-rounded
+    color: #c8c8c8ff
+    text-auto-resize: true
+
+  Label
+    id: levelLabel
+    anchors.right: parent.right
+    anchors.top: parent.top
+    margin-right: 9
+    margin-top: 6
+    font: verdana-10px-rounded
+    color: #9fd4ffff
+    text-align: right
+    text-auto-resize: true
+    !text: tr('0 / 50')
+
+  ProgressBar
+    id: rowLevelBar
+    anchors.left: iconSlot.right
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    height: 7
+    margin-left: 9
+    margin-right: 9
+    margin-bottom: 6
+    background-color: #10151cff
+    percent: 0
+    on: true
+    !text: tr('')
+
+NewMainWindow
+  id: skillPerksWindow
+  !text: tr('Skills & Perks')
+  size: 860 600
+  @onEscape: modules.game_skill_perks.hide()
+
+  Panel
+    id: content
+    anchors.fill: parent
+    margin: 14 12 14 12
+
+    FlatPanel
+      id: headerBar
+      height: 78
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      UIWidget
+        id: coreSlot
+        size: 34 34
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-left: 12
+        image-source: /images/ui/item
+        phantom: true
+        UIItem
+          id: item
+          size: 32 32
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.verticalCenter: parent.verticalCenter
+          virtual: true
+          phantom: true
+          draggable: false
+
+      Label
+        id: coresValue
+        anchors.left: coreSlot.right
+        anchors.top: parent.top
+        margin-left: 10
+        margin-top: 14
+        font: sans-bold-16px
+        color: #9fd4ffff
+        text-auto-resize: true
+        !text: tr('0')
+
+      Label
+        id: coresCaption
+        anchors.left: coreSlot.right
+        anchors.top: coresValue.bottom
+        margin-left: 10
+        margin-top: 2
+        font: verdana-10px-rounded
+        color: #9fd4ffff
+        text-auto-resize: true
+        !text: tr('Exalted Cores')
+
+      Label
+        id: systemTitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        margin-top: 18
+        font: Verdana Bold-13px
+        color: #ffd76aff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('Skills & Perks')
+
+      Label
+        id: systemSubtitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: systemTitle.bottom
+        margin-top: 4
+        font: verdana-10px-rounded
+        color: #c0c0c0ff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('Permanent upgrades with Exalted Cores')
+
+      Label
+        id: costLabel
+        anchors.right: parent.right
+        anchors.top: parent.top
+        margin-right: 12
+        margin-top: 16
+        font: verdana-11px-rounded
+        color: #e0c070ff
+        text-align: right
+        text-auto-resize: true
+        !text: tr('Cost: 10 / level')
+
+      Label
+        id: totalLabel
+        anchors.right: parent.right
+        anchors.top: costLabel.bottom
+        margin-right: 12
+        margin-top: 2
+        font: verdana-10px-rounded
+        color: #c8c8c8ff
+        text-align: right
+        text-auto-resize: true
+        !text: tr('Total levels: 0')
+
+    Panel
+      id: tabBar
+      height: 30
+      anchors.top: headerBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 8
+
+      Button
+        id: tabCore
+        size: 130 26
+        anchors.left: parent.left
+        anchors.top: parent.top
+        font: verdana-11px-rounded
+        !text: tr('Core Perks')
+        @onClick: modules.game_skill_perks.setTab('core')
+      Button
+        id: tabResist
+        size: 140 26
+        anchors.left: prev.right
+        anchors.top: parent.top
+        margin-left: 4
+        font: verdana-11px-rounded
+        !text: tr('Resistances')
+        @onClick: modules.game_skill_perks.setTab('resist')
+      Button
+        id: refreshButton
+        size: 90 24
+        anchors.right: parent.right
+        anchors.top: parent.top
+        !text: tr('Refresh')
+        @onClick: modules.game_skill_perks.refresh()
+
+    FlatPanel
+      id: listPanel
+      width: 470
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      Label
+        id: listTitle
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin-top: 8
+        margin-left: 10
+        font: verdana-11px-rounded
+        color: #ffd76aff
+        text-auto-resize: true
+        !text: tr('Core Perks')
+
+      TextList
+        id: perksList
+        anchors.top: listTitle.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        margin: 8 8 10 8
+        vertical-scrollbar: perksScroll
+        focusable: true
+        @onChildFocusChange: modules.game_skill_perks.onPerkSelected()
+      VerticalScrollBar
+        id: perksScroll
+        anchors.top: perksList.top
+        anchors.bottom: perksList.bottom
+        anchors.right: parent.right
+        margin-right: 2
+        step: 18
+        pixels-scroll: true
+
+    FlatPanel
+      id: detailsPanel
+      anchors.top: tabBar.bottom
+      anchors.left: listPanel.right
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-left: 8
+      margin-bottom: 28
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      UIWidget
+        id: detailSlot
+        size: 52 52
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin-top: 14
+        margin-left: 14
+        image-source: /images/ui/item
+        phantom: true
+        UIItem
+          id: item
+          size: 32 32
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.verticalCenter: parent.verticalCenter
+          virtual: true
+          phantom: true
+          draggable: false
+          visible: false
+        UIWidget
+          id: icon
+          size: 32 32
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.verticalCenter: parent.verticalCenter
+          image-smooth: true
+          phantom: true
+
+      Label
+        id: detailsTitle
+        anchors.left: detailSlot.right
+        anchors.verticalCenter: detailSlot.verticalCenter
+        margin-left: 10
+        font: Verdana Bold-13px
+        color: #ffd76aff
+        text-auto-resize: true
+        !text: tr('Select a perk')
+
+      Label
+        id: bonusBig
+        anchors.top: detailSlot.bottom
+        anchors.left: parent.left
+        margin-top: 16
+        margin-left: 14
+        font: sans-bold-16px
+        color: #7dff9fff
+        text-auto-resize: true
+        !text: tr('+0')
+
+      ProgressBar
+        id: levelBar
+        width: 280
+        height: 14
+        anchors.top: bonusBig.bottom
+        anchors.left: parent.left
+        margin-top: 10
+        margin-left: 14
+        background-color: #2a6a2aff
+        percent: 0
+        on: true
+        !text: tr('')
+
+      Label
+        id: detailsBody
+        anchors.top: levelBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin: 12 14 0 14
+        font: verdana-11px-rounded
+        color: #d0d0d0ff
+        text-wrap: true
+        text-auto-resize: true
+        !text: tr('Select a perk to view bonus and upgrade with Exalted Cores.')
+
+      Button
+        id: upgradeButton
+        size: 240 28
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        margin-bottom: 14
+        enabled: false
+        font: verdana-11px-rounded
+        !text: tr('Upgrade')
+        @onClick: modules.game_skill_perks.upgradeSelected()
+
+    Button
+      id: closeButton
+      !text: tr('Close')
+      width: 80
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-bottom: -2
+      @onClick: modules.game_skill_perks.hide()
+
+  UIWidget
+    id: crest
+    size: 145 56
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: -33
+    image-source: /images/game/tutorial/backdrop_crest
+    phantom: true

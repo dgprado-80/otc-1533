@@ -86,6 +86,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ProcessorNumber>2</ProcessorNumber>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>

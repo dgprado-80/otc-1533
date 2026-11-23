@@ -83,7 +83,17 @@ ControlButtonNames = {
 	compendiumDialog = "Compendium",
 	helperButton = "Helper Stats",
 	bosstiarytrackerButton = "Bosstiary Tracker",
-	bosstiary = "Bosstiary"
+	bosstiary = "Bosstiary",
+	-- BestServer custom side buttons (mods/game_sidebuttons)
+	bestTasksDialog = "Best Tasks",
+	upgradeStonesDialog = "Upgrade Stones",
+	skillPerksDialog = "Skill Perks",
+	bestPassportDialog = "Best Partner Passport",
+	levelRewardDialog = "Level Reward",
+	systemsGuideDialog = "BestServerOt Systems Guide",
+	bugReportDialog = "Bug Report",
+	streamerShopDialog = "Streamer Shop",
+	refundDialog = "Season Refund"
 }
 
 local PANEL_CONSTANTS = {
@@ -111,6 +121,15 @@ local DEFAULT_SHORTCUT_ORDER = {
 	"highscoresButton",
 	"ProciencyButton",
 	"helperButton",
+	"taskBoard",
+	-- BestServer custom features visible on first client open
+	"bestTasksDialog",
+	"upgradeStonesDialog",
+	"skillPerksDialog",
+	"bestPassportDialog",
+	"levelRewardDialog",
+	"systemsGuideDialog",
+	"bugReportDialog",
 	"manageShortcuts"
 }
 local optionsShrink = false

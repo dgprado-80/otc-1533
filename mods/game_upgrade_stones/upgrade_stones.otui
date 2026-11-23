@@ -1,0 +1,434 @@
+UpgradeSpellRow < UIWidget
+  height: 34
+  background-color: alpha
+  focusable: true
+  $hover:
+    background-color: #ffffff14
+  $focus:
+    background-color: #ffffff24
+
+  UIWidget
+    id: icon
+    size: 32 32
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 4
+    phantom: true
+
+  Label
+    id: nameLabel
+    anchors.left: icon.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    margin-right: 6
+    font: verdana-11px-rounded
+    color: #e8e0c8ff
+    text-auto-resize: true
+
+UpgradeRuneCard < FlatPanel
+  size: 176 196
+  image-source: /images/ui/2pixel_up_frame_borderimage
+  image-border: 4
+
+  Panel
+    id: itemStack
+    size: 72 72
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 6
+
+    UIWidget
+      id: runeFrame
+      size: 64 64
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      image-source: images/rune_fresco_frame_64
+      phantom: true
+
+    UIWidget
+      id: itemSlot
+      size: 34 34
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      phantom: true
+      UIItem
+        id: item
+        size: 32 32
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        virtual: true
+        phantom: true
+        draggable: false
+
+  Label
+    id: title
+    anchors.top: itemStack.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 6
+    font: verdana-11px-rounded
+    color: #ffd76aff
+    text-align: center
+    text-auto-resize: true
+    !text: tr('Rune')
+
+  Label
+    id: desc
+    anchors.top: title.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 4
+    margin-left: 8
+    margin-right: 8
+    font: verdana-10px-rounded
+    color: #b8b8b8ff
+    text-align: center
+    text-wrap: true
+    text-auto-resize: true
+    !text: tr('Equipment')
+
+  Button
+    id: craftButton
+    size: 140 24
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 12
+    !text: tr('Craft')
+
+NewMainWindow
+  id: upgradeStonesWindow
+  !text: tr('Upgrade Stones')
+  size: 860 600
+  @onEscape: modules.game_upgrade_stones.hide()
+
+  Panel
+    id: content
+    anchors.fill: parent
+    margin: 14 12 14 12
+
+    FlatPanel
+      id: headerBar
+      height: 78
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      image-source: /images/ui/2pixel_up_frame_borderimage
+      image-border: 4
+
+      UIWidget
+        id: stoneIcon
+        size: 32 32
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-left: 12
+        image-source: /images/game/destiny_wheel/icon-gematelier
+        phantom: true
+
+      Label
+        id: stonesValue
+        anchors.left: stoneIcon.right
+        anchors.top: parent.top
+        margin-left: 10
+        margin-top: 14
+        font: sans-bold-16px
+        color: #9fd4ffff
+        text-auto-resize: true
+        !text: tr('0')
+
+      Label
+        id: stonesCaption
+        anchors.left: stoneIcon.right
+        anchors.top: stonesValue.bottom
+        margin-left: 10
+        margin-top: 2
+        font: verdana-10px-rounded
+        color: #9fd4ffff
+        text-auto-resize: true
+        !text: tr('Upgrade Stones')
+
+      Label
+        id: runesCaption
+        anchors.left: stonesCaption.right
+        anchors.verticalCenter: stonesCaption.verticalCenter
+        margin-left: 18
+        font: verdana-10px-rounded
+        color: #e0c070ff
+        text-auto-resize: true
+        !text: tr('Runes crafted: 0')
+
+      Label
+        id: systemTitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        margin-top: 18
+        font: Verdana Bold-13px
+        color: #ffd76aff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('Upgrade Stones')
+
+      Label
+        id: systemSubtitle
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: systemTitle.bottom
+        margin-top: 4
+        font: verdana-10px-rounded
+        color: #c0c0c0ff
+        text-align: center
+        text-auto-resize: true
+        !text: tr('Forge Resonance & Spell Damage')
+
+      UIWidget
+        id: resonanceIcon
+        size: 32 32
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        margin-right: 12
+        image-source: /images/game/cyclopedia/ui/icon-magicalarchive-runeinfo
+        phantom: true
+
+      Label
+        id: resonanceLabel
+        anchors.right: resonanceIcon.left
+        anchors.top: parent.top
+        margin-right: 8
+        margin-top: 16
+        font: verdana-11px-rounded
+        color: #c8e0a8ff
+        text-align: right
+        text-auto-resize: true
+        !text: tr('Resonance')
+
+      Label
+        id: dailyLabel
+        anchors.right: resonanceIcon.left
+        anchors.top: resonanceLabel.bottom
+        margin-right: 8
+        margin-top: 2
+        font: verdana-10px-rounded
+        color: #c8c8c8ff
+        text-align: right
+        text-auto-resize: true
+        !text: tr('Daily: 0/20')
+
+    Panel
+      id: tabBar
+      height: 30
+      anchors.top: headerBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 8
+
+      Button
+        id: tabRunes
+        size: 150 26
+        anchors.left: parent.left
+        anchors.top: parent.top
+        font: verdana-11px-rounded
+        !text: tr('Craft Runes')
+        @onClick: modules.game_upgrade_stones.setTab('runes')
+      Button
+        id: tabSpells
+        size: 160 26
+        anchors.left: prev.right
+        anchors.top: parent.top
+        margin-left: 4
+        font: verdana-11px-rounded
+        !text: tr('Spell Damage')
+        @onClick: modules.game_upgrade_stones.setTab('spells')
+      Button
+        id: refreshButton
+        size: 90 24
+        anchors.right: parent.right
+        anchors.top: parent.top
+        !text: tr('Refresh')
+        @onClick: modules.game_upgrade_stones.refresh()
+
+    Panel
+      id: runesPanel
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+
+      FlatPanel
+        id: runesInfo
+        height: 56
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+
+        Label
+          id: nextCostLabel
+          anchors.left: parent.left
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 14
+          font: Verdana Bold-13px
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Next rune: 10 stones')
+
+        Label
+          id: runesInfoBody
+          anchors.left: nextCostLabel.right
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          margin-left: 18
+          margin-right: 12
+          font: verdana-10px-rounded
+          color: #c8c8c8ff
+          text-wrap: true
+          text-auto-resize: true
+          !text: tr('Craft runes to upgrade gear. Each craft also raises spell unlocks and damage cap.')
+
+      Panel
+        id: runeCardsRow
+        anchors.top: runesInfo.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        margin-top: 10
+        layout:
+          type: horizontalBox
+          spacing: 10
+
+        UpgradeRuneCard
+          id: cardAttack
+        UpgradeRuneCard
+          id: cardArmor
+        UpgradeRuneCard
+          id: cardDefense
+        UpgradeRuneCard
+          id: cardWand
+
+    Panel
+      id: spellsPanel
+      anchors.top: tabBar.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 8
+      margin-bottom: 28
+      visible: false
+
+      FlatPanel
+        id: spellsListPanel
+        width: 460
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+        Label
+          id: spellsTitle
+          anchors.top: parent.top
+          anchors.left: parent.left
+          margin-top: 8
+          margin-left: 10
+          font: verdana-11px-rounded
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Vocation Spells')
+        TextList
+          id: spellsList
+          anchors.top: spellsTitle.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          margin: 8 8 10 8
+          vertical-scrollbar: spellsScroll
+          focusable: true
+          @onChildFocusChange: modules.game_upgrade_stones.onSpellSelected()
+        VerticalScrollBar
+          id: spellsScroll
+          anchors.top: spellsList.top
+          anchors.bottom: spellsList.bottom
+          anchors.right: parent.right
+          margin-right: 2
+          step: 18
+          pixels-scroll: true
+
+      FlatPanel
+        id: spellDetails
+        anchors.top: parent.top
+        anchors.left: spellsListPanel.right
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        margin-left: 8
+        image-source: /images/ui/2pixel_up_frame_borderimage
+        image-border: 4
+
+        UIWidget
+          id: spellDetailIcon
+          size: 32 32
+          anchors.top: parent.top
+          anchors.left: parent.left
+          margin-top: 14
+          margin-left: 14
+          phantom: true
+
+        Label
+          id: spellDetailsTitle
+          anchors.left: spellDetailIcon.right
+          anchors.verticalCenter: spellDetailIcon.verticalCenter
+          margin-left: 10
+          font: Verdana Bold-13px
+          color: #ffd76aff
+          text-auto-resize: true
+          !text: tr('Spell Details')
+
+        Label
+          id: spellBonusBig
+          anchors.top: spellDetailIcon.bottom
+          anchors.left: parent.left
+          margin-top: 16
+          margin-left: 14
+          font: sans-bold-16px
+          color: #7dff9fff
+          text-auto-resize: true
+          !text: '+0%'
+
+        Label
+          id: spellDetailsBody
+          anchors.top: spellBonusBig.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          margin: 10 14 0 14
+          font: verdana-11px-rounded
+          color: #d0d0d0ff
+          text-wrap: true
+          text-auto-resize: true
+          !text: tr('Select a spell to upgrade damage (+1%% per level).')
+
+        Button
+          id: upgradeSpellButton
+          size: 240 28
+          anchors.bottom: parent.bottom
+          anchors.horizontalCenter: parent.horizontalCenter
+          margin-bottom: 14
+          enabled: false
+          font: verdana-11px-rounded
+          !text: tr('Upgrade Spell')
+          @onClick: modules.game_upgrade_stones.upgradeSelectedSpell()
+
+    Button
+      id: closeButton
+      !text: tr('Close')
+      width: 80
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-bottom: -2
+      @onClick: modules.game_upgrade_stones.hide()
+
+  UIWidget
+    id: crest
+    size: 145 56
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: -33
+    image-source: /images/game/tutorial/backdrop_crest
+    phantom: true
