@@ -2,14 +2,15 @@
 -- we have to load the first modules form here
 
 -- updater
-Services = {
-    --updater = "http://localhost/api/updater.php", --./updater
-    --status = "http://localhost/login.php", --./client_entergame | ./client_topmenu
-    --websites = "http://localhost/?subtopic=accountmanagement", --./client_entergame "Forgot password and/or email"
-    --createAccount = "http://localhost/clientcreateaccount.php", --./client_entergame -- createAccount.lua
-    --getCoinsUrl = "http://localhost/?subtopic=shop&step=terms", --./game_market
-    --minimap = "http://localhost/minimap.otmm", --./game_minimap
-}
+-- Windows production only. The Android APK does not auto-update.
+-- devserver.flag next to the exe (gitignored) keeps this machine on the local login
+-- and does not call the production updater.
+Services = {}
+
+local devServer = g_resources.fileExists("/devserver.flag")
+if not devServer and not g_platform.isMobile() then
+    Services.updater = "https://bestserverot.com.br/api/updater-1533.php"
+end
 
 --- Enables or disables the entire server configuration block.
 -- Set to `false` to disable all configuration below.
@@ -42,6 +43,14 @@ local ENABLE_SERVERS = true
 
 Servers_init = {}
 
+-- Inside LDPlayer, 127.0.0.1 is the Android guest. The Windows host is the NAT address.
+local function localServerHost()
+    if g_platform.isMobile() then
+        return "10.0.2.2"
+    end
+    return "127.0.0.1"
+end
+
 if ENABLE_SERVERS then
 
     ---
@@ -53,7 +62,7 @@ if ENABLE_SERVERS then
     -- release endpoint. Release (no flag) = the production login below.
     if g_resources.fileExists("/devserver.flag") then
         Servers_init = {
-            ["http://127.0.0.1/login.php"] = {
+            ["http://" .. localServerHost() .. "/login.php"] = {
                 port = 80,
                 protocol = 1533,
                 httpLogin = true,
@@ -62,8 +71,8 @@ if ENABLE_SERVERS then
         }
     else
         Servers_init = {
-            ["http://127.0.0.1/login.php"] = {
-                port = 80,
+            ["https://bestserverot.com.br/login-new.php"] = {
+                port = 443,
                 protocol = 1533,
                 httpLogin = true,
                 useAuthenticator = false
@@ -72,9 +81,9 @@ if ENABLE_SERVERS then
     end
 end
 
-g_app.setName("CrystalOTC");
+g_app.setName("BestserverOt");
 g_app.setCompactName("crystalotc");
-g_app.setOrganizationName("Crystal");
+g_app.setOrganizationName("Bestserver");
 
 -- Server gate is 15.33-only. Assets still live under data/things/1530 until a dedicated
 -- 1533 pack exists; things.lua falls back to that folder when /things/1533/ is missing.

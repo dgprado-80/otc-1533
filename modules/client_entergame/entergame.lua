@@ -775,9 +775,14 @@ function EnterGame.loginSuccess(requestId, jsonSession, jsonWorlds, jsonCharacte
 
 	for _, world in ipairs(json.decode(jsonWorlds)) do
 		if world.id then
+			local worldIp = world.externaladdressprotected
+			-- login.php advertises the server config ip (127.0.0.1). On the emulator that is not the PC.
+			if g_platform.isMobile() and (worldIp == "127.0.0.1" or worldIp == "localhost") then
+				worldIp = "10.0.2.2"
+			end
 			worlds[world.id] = {
 				name = world.name,
-				ip = world.externaladdressprotected,
+				ip = worldIp,
 				port = world.externalportprotected,
 				previewState = world.previewstate == 1,
 				pvptype = world.pvptype

@@ -1,7 +1,24 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+if (keystorePropertiesFile.exists()) {
+    FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
+}
+
+val ciAbiFilters = providers.gradleProperty("otclient.android.abis")
+    .orElse(providers.environmentVariable("OTCLIENT_ANDROID_ABIS"))
+    .orNull
+    ?.split(",")
+    ?.map { it.trim() }
+    ?.filter { it.isNotEmpty() }
+    ?: listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
 
 android {
     namespace = "com.github.otclient"
@@ -16,7 +33,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+            abiFilters += ciAbiFilters
         }
 
         externalNativeBuild {
@@ -27,7 +44,11 @@ android {
                     "-DVCPKG_TARGET_ANDROID=ON",
                     "-DANDROID_STL=c++_shared",
                     "-DVCPKG_MANIFEST_INSTALL=ON",
-                    "-DVCPKG_INSTALL_OPTIONS=--allow-unsupported"
+                    "-DVCPKG_INSTALL_OPTIONS=--allow-unsupported",
+                    "-DSPEED_UP_BUILD_UNITY=OFF",
+                    "-DOPTIONS_LOW_MEMORY_BUILD=ON",
+                    "-DOPTIONS_COMPILE_JOBS=1",
+                    "-DOPTIONS_LINK_JOBS=1"
                 )
             }
         }
@@ -35,19 +56,23 @@ android {
 
     signingConfigs {
         create("release") {
-            // Use env vars for CI/production, fallback to debug keystore for local dev
-            storeFile = file(System.getenv("RELEASE_KEYSTORE")
-                ?: System.getProperty("user.home") + "/.android/debug.keystore")
-            storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD") ?: "android"
-            keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: "androiddebugkey"
-            keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: "android"
+            val store = System.getenv("RELEASE_KEYSTORE")
+                ?: keystoreProperties.getProperty("storeFile")
+                ?: error("Release keystore missing. Create android/keystore.properties or set RELEASE_KEYSTORE.")
+            storeFile = rootProject.file(store)
+            storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+                ?: keystoreProperties.getProperty("storePassword")
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                ?: keystoreProperties.getProperty("keyAlias")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+                ?: keystoreProperties.getProperty("keyPassword")
         }
     }
 
     externalNativeBuild {
         cmake {
             path = file("../../CMakeLists.txt")
-            version = "3.22.1"
+            version = "3.31.6"
         }
     }
 

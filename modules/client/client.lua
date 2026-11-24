@@ -146,17 +146,32 @@ function startup()
 end
 
 function init()
-	connect(g_app, {
-		onRun = startup
-	})
+	if g_app.hasUpdater() then
+		connect(g_app, {
+			onUpdateFinished = startup
+		})
+	else
+		connect(g_app, {
+			onRun = startup
+		})
+	end
 
 	if musicChannel then
-		g_sounds.preload(musicFilename)
+		local startupSound = resolvepath(g_resources.guessFilePath(musicFilename, "ogg"))
+		if g_resources.fileExists(startupSound) then
+			g_sounds.preload(musicFilename)
+		end
 	end
 end
 
 function terminate()
-	disconnect(g_app, {
-		onRun = startup
-	})
+	if g_app.hasUpdater() then
+		disconnect(g_app, {
+			onUpdateFinished = startup
+		})
+	else
+		disconnect(g_app, {
+			onRun = startup
+		})
+	end
 end

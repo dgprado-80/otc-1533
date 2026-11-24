@@ -1,6 +1,6 @@
 Panel
   id: background
-  image-source: /images/background_crystal1
+  image-source: /images/background
   // smoothing enabled: backgrounds are scaled to the window size, without smooth pixels are visible
   image-smooth: true
   // fixed-ratio = "cover" mode: fills the window keeping the aspect ratio, excess is cropped

@@ -26,6 +26,7 @@
 #include <framework/core/unzipper.h>
 #include <framework/core/resourcemanager.h>
 #include <framework/sound/soundmanager.h>
+#include <fstream>
 
 AndroidManager g_androidManager;
 
@@ -117,9 +118,16 @@ void AndroidManager::setClipboardText(const std::string& text) {
 void AndroidManager::unZipAssetData() {
     std::string destFolder = getAppBaseDir() + "/game_data/";
 
-    const std::filesystem::path initLua { destFolder + "init.lua" };
-    if (std::filesystem::exists(initLua)) {
-        return;
+    // Bump when data.zip changes. The previous build skipped extraction once
+    // init.lua existed, so an updated APK kept the old files and crashed.
+    constexpr std::string_view assetStamp = "2026-11-24-emulator-host";
+    const std::filesystem::path stampFile { destFolder + ".asset_stamp" };
+    if (std::filesystem::exists(stampFile)) {
+        std::ifstream stampIn(stampFile);
+        std::string current;
+        std::getline(stampIn, current);
+        if (current == assetStamp)
+            return;
     }
 
     AAsset* dataAsset = AAssetManager_open(
@@ -141,6 +149,9 @@ void AndroidManager::unZipAssetData() {
 
     AAsset_close(dataAsset);
     free(dataContent);
+
+    std::ofstream stampOut(stampFile, std::ios::trunc);
+    stampOut << assetStamp;
 }
 
 std::string AndroidManager::getAppBaseDir() {
