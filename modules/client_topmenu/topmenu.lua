@@ -9,6 +9,11 @@ local fpsMin = -1
 local fpsMax = -1
 local pingPanel, MainPingPanel, mainFpsPanel, fpsPanel2, PingWidget, pingImg, worldNameLabel, zoomInButton, zoomOutButton
 local zoomLevel = 2
+local hudScaleBase = 1
+local hudScaleMin = 0.75
+local hudScaleMax = 3
+local hudScaleStep = 0.25
+local hudScaleLocked = false
 local managerAccountsButton, managerClientsButton, lastUpdatesButton
 local lastUpdatesHighlightActive = false
 
@@ -73,25 +78,133 @@ local function addButton(id, description, icon, callback, panel, toggle, front, 
 	return button
 end
 
-local function updateZoomButtons()
-	if zoomInButton then
-		zoomInButton:setEnabled(zoomLevel < 6)
+local function refreshHudScaleMax()
+	if hudScaleLocked then
+		return
 	end
 
-	if zoomOutButton then
-		zoomOutButton:setEnabled(zoomLevel > 1.5)
+	local screenW = g_window.getWidth() or 0
+	local screenH = g_window.getHeight() or 0
+	local menuH = 36
+
+	if topMenu and not topMenu:isDestroyed() then
+		local height = topMenu:getHeight()
+
+		if height and height > 16 then
+			menuH = height
+		end
+	end
+
+	local maxScale = hudScaleBase * 1.35
+
+	if screenH > 100 then
+		local menuLimit = screenH * 0.16 / menuH
+		local joystickLimit = screenH * 0.34 / 150
+
+		if menuLimit > hudScaleBase then
+			maxScale = math.min(maxScale, menuLimit)
+		end
+
+		if joystickLimit > hudScaleBase then
+			maxScale = math.min(maxScale, joystickLimit)
+		end
+	end
+
+	if screenW > 100 then
+		local rowLimit = screenW / 700
+
+		if rowLimit > hudScaleBase then
+			maxScale = math.min(maxScale, rowLimit)
+		end
+	end
+
+	if maxScale < hudScaleBase + hudScaleStep then
+		maxScale = hudScaleBase + hudScaleStep
+	end
+
+	hudScaleMax = maxScale
+end
+
+local function zoomButtonFits(button)
+	if not button or button:isDestroyed() or not button:isVisible() then
+		return true
+	end
+
+	local root = g_ui.getRootWidget()
+
+	if not root or root:isDestroyed() then
+		return true
+	end
+
+	local x = button:getX()
+	local y = button:getY()
+	local right = x + button:getWidth()
+	local bottom = y + button:getHeight()
+
+	return x >= root:getX() and y >= root:getY() and right <= root:getX() + root:getWidth() and bottom <= root:getY() + root:getHeight()
+end
+
+local function updateZoomButtons()
+	if zoomInButton and not zoomInButton:isDestroyed() then
+		zoomInButton:setEnabled(zoomLevel < hudScaleMax - 0.01)
+	end
+
+	if zoomOutButton and not zoomOutButton:isDestroyed() then
+		zoomOutButton:setEnabled(zoomLevel > hudScaleMin + 0.01)
 	end
 end
 
-local function setZoom(value)
-	local oldValue = zoomLevel
+local function applyHudScale(value)
+	zoomLevel = value
 
-	zoomLevel = math.max(1.5, math.min(6, value))
+	if g_app.setHUDScale then
+		g_app.setHUDScale(zoomLevel)
+	end
 
-	modules.client_options.setOption("hudScale", zoomLevel)
 	updateZoomButtons()
+end
 
-	return oldValue ~= zoomLevel
+local function setZoom(value)
+	refreshHudScaleMax()
+
+	local oldValue = zoomLevel
+	local requested = math.max(hudScaleMin, math.min(hudScaleMax, value))
+
+	if math.abs(requested - oldValue) < 0.01 then
+		updateZoomButtons()
+
+		return false
+	end
+
+	applyHudScale(requested)
+
+	addEvent(function()
+		if requested <= oldValue then
+			if modules.game_interface and modules.game_interface.applyMobileGameLayout then
+				modules.game_interface.applyMobileGameLayout()
+			end
+
+			return
+		end
+
+		if zoomButtonFits(zoomInButton) and zoomButtonFits(zoomOutButton) then
+			if modules.game_interface and modules.game_interface.applyMobileGameLayout then
+				modules.game_interface.applyMobileGameLayout()
+			end
+
+			return
+		end
+
+		hudScaleLocked = true
+		hudScaleMax = oldValue
+		applyHudScale(oldValue)
+
+		if modules.game_interface and modules.game_interface.applyMobileGameLayout then
+			modules.game_interface.applyMobileGameLayout()
+		end
+	end)
+
+	return true
 end
 
 function init()
@@ -141,11 +254,21 @@ function init()
 	end
 
 	if g_platform.isMobile() then
+		hudScaleBase = g_window.getDisplayDensity() or 1
+
+		if hudScaleBase < 0.5 then
+			hudScaleBase = 1
+		end
+
+		hudScaleMin = math.max(0.75, hudScaleBase * 0.75)
+		hudScaleStep = math.max(0.15, hudScaleBase * 0.1)
+		zoomLevel = hudScaleBase
+		refreshHudScaleMax()
 		zoomInButton = modules.client_topmenu.addLeftToggleButton("zoomInButton", "Zoom In", "/images/topbuttons/zoomin", function()
-			setZoom(zoomLevel + 0.5)
+			setZoom(zoomLevel + hudScaleStep)
 		end)
 		zoomOutButton = modules.client_topmenu.addLeftToggleButton("zoomOutButton", "Zoom Out", "/images/topbuttons/zoomout", function()
-			setZoom(zoomLevel - 0.5)
+			setZoom(zoomLevel - hudScaleStep)
 		end)
 
 		updateZoomButtons()

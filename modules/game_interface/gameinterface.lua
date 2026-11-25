@@ -517,6 +517,9 @@ function show()
 		addEvent(applyMobileGameLayout)
 		scheduleEvent(applyMobileGameLayout, 300)
 		scheduleEvent(applyMobileGameLayout, 800)
+	else
+		addEvent(applyDesktopSidebarLayout)
+		scheduleEvent(applyDesktopSidebarLayout, 500)
 	end
 
 	addEvent(function()
@@ -981,6 +984,97 @@ function applyMobileGameLayout()
 
 	if gameMapPanel and not gameMapPanel:isDestroyed() then
 		gameMapPanel:setKeepAspectRatio(false)
+	end
+end
+
+local function sidebarPanelIsEmpty(panel)
+	if not panel or panel:isDestroyed() then
+		return true
+	end
+
+	for _, child in ipairs(panel:getChildren()) do
+		local childId = child and child:getId()
+
+		if child and not child:isDestroyed() and childId ~= "sidebarFreeSpace" and not child._sidebarFreeSpaceWidget and not child._sidebarDragPlaceholder then
+			return false
+		end
+	end
+
+	return true
+end
+
+local function placeDesktopMainWindow(widgetId, index)
+	if not gameRootPanel or gameRootPanel:isDestroyed() or not gameMainRightPanel or gameMainRightPanel:isDestroyed() then
+		return
+	end
+
+	local widget = gameRootPanel:recursiveGetChildById(widgetId)
+
+	if not widget or widget:isDestroyed() then
+		return
+	end
+
+	widget.moveOnlyToMain = true
+
+	if widget:getParent() ~= gameMainRightPanel then
+		widget:setParent(gameMainRightPanel)
+	end
+
+	widget:setVisible(true)
+
+	if gameMainRightPanel:hasChild(widget) then
+		gameMainRightPanel:moveChildToIndex(widget, index)
+	end
+end
+
+function applyDesktopSidebarLayout()
+	if g_platform.isMobile() or not gameMainRightPanel or gameMainRightPanel:isDestroyed() or not gameRightPanel or gameRightPanel:isDestroyed() then
+		return
+	end
+
+	for _, panel in ipairs({
+		gameLeftTopPanel,
+		gameRightTopPanel
+	}) do
+		if panel and not panel:isDestroyed() and sidebarPanelIsEmpty(panel) then
+			panel:setHeight(0)
+			panel:setVisible(false)
+		end
+	end
+
+	placeDesktopMainWindow("mainmappanel", 1)
+	placeDesktopMainWindow("mainhealthmanapanel", 2)
+	placeDesktopMainWindow("maininventorypanel", 3)
+
+	gameMainRightPanel:setOn(true)
+	gameMainRightPanel:setVisible(true)
+	gameMainRightPanel:setImageColor("white")
+
+	local height = (gameMainRightPanel:getPaddingTop() or 0) + (gameMainRightPanel:getPaddingBottom() or 0)
+
+	for _, child in ipairs(gameMainRightPanel:getChildren()) do
+		if child and not child:isDestroyed() and child:isVisible() and not child._sidebarFreeSpaceWidget and not child._sidebarDragPlaceholder then
+			height = height + child:getHeight() + (child:getMarginTop() or 0) + (child:getMarginBottom() or 0)
+		end
+	end
+
+	local available = gameRootPanel and gameRootPanel:getHeight() or 0
+
+	if gameBottomPanel and not gameBottomPanel:isDestroyed() then
+		available = available - gameBottomPanel:getHeight()
+	end
+
+	available = available - 8
+
+	if available > 180 and height > available then
+		height = available
+	end
+
+	gameMainRightPanel:setHeight(math.max(height, 1))
+	syncMainRightPanelClearance()
+
+	if gameRightPanel.refreshSidebarFreeSpace then
+		gameRightPanel:refreshSidebarFreeSpace()
 	end
 end
 
@@ -4508,11 +4602,13 @@ function updateHorizontalPanelWidths()
 	if gameLeftTopPanel and not gameLeftTopPanel:isDestroyed() then
 		local leftWidth = SIDEBAR_COLUMN_WIDTH * leftHorizontalColumns
 
-		if leftWidth <= 0 then
-			gameLeftTopPanel:setWidth(0)
+		if leftWidth <= 0 or sidebarPanelIsEmpty(gameLeftTopPanel) then
+			gameLeftTopPanel:setWidth(leftWidth > 0 and leftWidth or 0)
+			gameLeftTopPanel:setHeight(0)
 			gameLeftTopPanel:setVisible(false)
 		else
 			gameLeftTopPanel:setWidth(leftWidth)
+			gameLeftTopPanel:setHeight(200)
 
 			if gameLeftTopPanel:isOn() then
 				gameLeftTopPanel:setVisible(true)
@@ -4528,11 +4624,13 @@ function updateHorizontalPanelWidths()
 	if gameRightTopPanel and not gameRightTopPanel:isDestroyed() then
 		local rightWidth = SIDEBAR_COLUMN_WIDTH * rightHorizontalColumns
 
-		if rightWidth <= 0 then
-			gameRightTopPanel:setWidth(0)
+		if rightWidth <= 0 or sidebarPanelIsEmpty(gameRightTopPanel) then
+			gameRightTopPanel:setWidth(rightWidth > 0 and rightWidth or 0)
+			gameRightTopPanel:setHeight(0)
 			gameRightTopPanel:setVisible(false)
 		else
 			gameRightTopPanel:setWidth(rightWidth)
+			gameRightTopPanel:setHeight(200)
 
 			if gameRightTopPanel:isOn() then
 				gameRightTopPanel:setVisible(true)
