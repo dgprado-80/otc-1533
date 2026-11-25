@@ -6,7 +6,9 @@ local keypadMousePos = {
 	y = 0.5
 }
 local firstStep = true
+local pressStartedAt = 0
 local moveListener
+local HOLD_BEFORE_REPEAT_MS = 280
 
 function init()
 	if not g_platform.isMobile() then
@@ -79,6 +81,7 @@ function onKeypadTouchPress(widget, pos, button)
 		y = (pos.y - widget:getPosition().y) / widget:getHeight()
 	}
 	firstStep = true
+	pressStartedAt = g_clock.millis()
 
 	executeWalk()
 
@@ -99,14 +102,10 @@ function onKeypadTouchRelease(widget, pos, button)
 		return false
 	end
 
-	keypadMousePos = {
-		x = (pos.x - widget:getPosition().x) / widget:getWidth(),
-		y = (pos.y - widget:getPosition().y) / widget:getHeight()
-	}
-	firstStep = false
-
-	executeWalk()
 	removeEvent(keypadUpdateEvent)
+
+	keypadUpdateEvent = nil
+	firstStep = true
 	keypad.pointer:setMarginTop(0)
 	keypad.pointer:setMarginLeft(0)
 
@@ -164,8 +163,12 @@ function executeWalk()
 		end
 	end
 
-	if dir and moveListener then
+	local held = g_clock.millis() - pressStartedAt
+
+	if dir and moveListener and (firstStep or held >= HOLD_BEFORE_REPEAT_MS) then
 		moveListener(dir, firstStep)
+
+		firstStep = false
 	end
 end
 

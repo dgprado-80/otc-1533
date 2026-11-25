@@ -708,7 +708,7 @@ function WalkController:onGameStart()
 	modules.game_interface.getRootPanel().onFocusChange = abortSmartWalk
 
 	modules.game_joystick.addOnJoystickMoveListener(function(dir)
-		g_game.walk(dir)
+		walk(dir)
 	end)
 
 	if not g_game.isOfficialTibia() then
