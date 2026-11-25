@@ -1,4 +1,10 @@
 Module
-  name: game_bot_pakdisabled
-  description: disabled - legacy module from the embedded pak
-
+  name: game_bot
+  description: Advanced OTClientV8 Bot
+  author: otclient@otclient.ovh
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1000
+  scripts: [ bot ]
+  @onLoad: init()
+  @onUnload: terminate()

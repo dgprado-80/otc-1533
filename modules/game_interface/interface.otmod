@@ -43,7 +43,6 @@ Module
     - game_shaders
     - game_attachedeffects
     - game_stash
-    - game_helper
     - game_healthcircle
     - game_screenshot
     - game_banners

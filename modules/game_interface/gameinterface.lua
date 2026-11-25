@@ -5194,5 +5194,13 @@ function testExtendedView(mode)
 end
 
 function openHelper()
-	modules.game_helper.toggle()
+	if modules.game_bot and modules.game_bot.toggle then
+		modules.game_bot.toggle()
+
+		return
+	end
+
+	if modules.game_helper and modules.game_helper.toggle then
+		modules.game_helper.toggle()
+	end
 end

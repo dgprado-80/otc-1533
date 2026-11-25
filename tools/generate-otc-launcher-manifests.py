@@ -46,7 +46,7 @@ asset_files = []
 for dirpath, dirnames, filenames in os.walk(ROOT):
     dirnames[:] = [name for name in dirnames if name not in SKIP_DIRS]
     for name in filenames:
-        if name in SKIP_FILES or name.endswith(".log"):
+        if name in SKIP_FILES or name.endswith(".log") or name.endswith(".zip") or name.endswith(".disabled"):
             continue
         full = os.path.join(dirpath, name)
         rel = os.path.relpath(full, ROOT).replace("\\", "/")

@@ -48,7 +48,12 @@ local function setButtonVisible(id, visible)
   end
   local btn = modules.game_mainpanel.getButton(id)
   if btn then
-    btn:setVisible(visible)
+    btn.shortcutOptOut = not visible
+    if visible and modules.game_mainpanel.setMainPanelButtonVisible then
+      modules.game_mainpanel.setMainPanelButtonVisible(id, true)
+    else
+      btn:setVisible(false)
+    end
     reloadPanel()
   end
 end
@@ -87,6 +92,7 @@ local function registerButtons()
     local image = string.format('/images/topbuttons/%s.png', cfg.icon)
     local btn = modules.game_mainpanel.addToggleButton(cfg.id, cfg.tooltip, image, cfg.callback, false, cfg.index)
     if btn then
+      btn.shortcutOptOut = true
       btn:setVisible(false)
     end
   end

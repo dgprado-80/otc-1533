@@ -5,6 +5,7 @@ Module
   website: https://github.com/Jattartajjar/CrystalOTC
   sandboxed: true
   load-later:
+    - game_bot
     - game_buttons
     - game_itemselector
     - client_textedit

@@ -82,6 +82,7 @@ ControlButtonNames = {
 	wheelButton = "Wheel of Destiny",
 	compendiumDialog = "Compendium",
 	helperButton = "Helper Stats",
+	botButton = "Bot",
 	bosstiarytrackerButton = "Bosstiary Tracker",
 	bosstiary = "Bosstiary",
 	-- BestServer custom side buttons (mods/game_sidebuttons)
@@ -109,6 +110,7 @@ local PANEL_CONSTANTS = {
 		OPTIONS = 5
 	}
 }
+local showEveryShortcut = false
 local DEFAULT_SHORTCUT_ORDER = {
 	"skillsButton",
 	"battleButton",
@@ -120,7 +122,7 @@ local DEFAULT_SHORTCUT_ORDER = {
 	"CyclopediaButton",
 	"highscoresButton",
 	"ProciencyButton",
-	"helperButton",
+	"botButton",
 	"taskBoard",
 	-- BestServer custom features visible on first client open
 	"bestTasksDialog",
@@ -335,8 +337,15 @@ local function doFullSync()
 		local id = button:getId()
 
 		if id then
-			if not buttonConfigs[id] then
-				local visible = table.find(buttonOrder, id) ~= nil
+			if button.shortcutOptOut then
+				button:setVisible(false)
+				table.removevalue(buttonOrder, id)
+				buttonConfigs[id] = {
+					visible = false,
+					tooltip = ControlButtonNames[id] or stripHotkey(button:getTooltip()) or id
+				}
+			elseif not buttonConfigs[id] then
+				local visible = showEveryShortcut or table.find(buttonOrder, id) ~= nil
 
 				buttonConfigs[id] = {
 					visible = visible,
@@ -344,7 +353,9 @@ local function doFullSync()
 				}
 			end
 
-			button:setVisible(buttonConfigs[id].visible)
+			if not button.shortcutOptOut then
+				button:setVisible(buttonConfigs[id].visible)
+			end
 
 			if buttonConfigs[id].visible and not table.find(buttonOrder, id) then
 				table.insert(buttonOrder, id)
@@ -442,10 +453,20 @@ local function createButton(id, description, image, callback, special, front, in
 	end
 
 	if not special then
-		button:setVisible(false)
+		local visible = false
 
-		if buttonConfigs[id] then
-			button:setVisible(buttonConfigs[id].visible)
+		if button.shortcutOptOut then
+			visible = false
+		elseif buttonConfigs[id] then
+			visible = buttonConfigs[id].visible
+		elseif showEveryShortcut or table.find(buttonOrder, id) then
+			visible = true
+		end
+
+		button:setVisible(visible)
+
+		if visible and not table.find(buttonOrder, id) then
+			table.insert(buttonOrder, id)
 		end
 
 		refreshShortcutsSidebarContextMenu()
@@ -705,7 +726,7 @@ function applyShortcutOrder(order)
 		local id = button:getId()
 
 		if id and id ~= "" then
-			local visible = visibleSet[id] == true
+			local visible = not button.shortcutOptOut and (showEveryShortcut or visibleSet[id] == true)
 
 			button:setVisible(visible)
 
@@ -729,14 +750,18 @@ end
 
 function loadButtonConfig()
 	local shortcutOrder
+	local saved = false
 
 	if SidebarPersistence and SidebarPersistence.getSection then
 		local panelOptions = SidebarPersistence.getSection("sidebarPanelsOptions")
 
 		if type(panelOptions) == "table" and type(panelOptions.shortcutOrder) == "table" then
 			shortcutOrder = panelOptions.shortcutOrder
+			saved = true
 		end
 	end
+
+	showEveryShortcut = not saved and not g_platform.isMobile()
 
 	return {
 		shortcutOrder = shortcutOrder or DEFAULT_SHORTCUT_ORDER
