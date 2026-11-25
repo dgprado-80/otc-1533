@@ -486,7 +486,15 @@ void HttpSession::on_read(const std::error_code& ec, const size_t bytes_transfer
         m_callback(m_result);
     };
 
-    if (ec && ec != asio::error::eof) {
+    // login-new.php answers without Content-Length and nginx closes the TLS
+    // stream. A short body (boosted creature) arrives in the same read as that
+    // close, which Beast reports as stream_truncated. The JSON is already in
+    // the buffer, so accept it.
+    if (ec && ec != asio::error::eof && ec != asio::ssl::error::stream_truncated) {
+        onError("HttpSession unable to on_read " + m_url + ": " + ec.message());
+        return;
+    }
+    if (ec == asio::ssl::error::stream_truncated && m_response.size() == 0) {
         onError("HttpSession unable to on_read " + m_url + ": " + ec.message());
         return;
     }

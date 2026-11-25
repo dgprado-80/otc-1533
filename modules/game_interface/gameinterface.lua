@@ -510,13 +510,13 @@ function show()
 	setupViewMode(0)
 
 	if g_platform.isMobile() then
-		mobileConfig.mobileWidthJoystick = modules.game_joystick.getPanel():getWidth()
-		mobileConfig.mobileWidthShortcuts = modules.game_shortcuts.getPanel():getWidth()
-		mobileConfig.mobileHeightJoystick = modules.game_joystick.getPanel():getHeight()
-		mobileConfig.mobileHeightShortcuts = modules.game_shortcuts.getPanel():getHeight()
+		refreshMobileControlSizes()
 
 		setupViewMode(1)
 		setupViewMode(2)
+		addEvent(applyMobileGameLayout)
+		scheduleEvent(applyMobileGameLayout, 300)
+		scheduleEvent(applyMobileGameLayout, 800)
 	end
 
 	addEvent(function()
@@ -752,6 +752,238 @@ function maximizeMapAfterSidebarRemoval()
 	end
 end
 
+local function positiveSize(value, fallback)
+	value = tonumber(value) or 0
+
+	if value < 1 then
+		return fallback
+	end
+
+	return value
+end
+
+function refreshMobileControlSizes()
+	if not g_platform.isMobile() then
+		return
+	end
+
+	local joystick = modules.game_joystick and modules.game_joystick.getPanel and modules.game_joystick.getPanel()
+	local shortcuts = modules.game_shortcuts and modules.game_shortcuts.getPanel and modules.game_shortcuts.getPanel()
+
+	mobileConfig.mobileWidthJoystick = positiveSize(joystick and joystick:getWidth(), 175)
+	mobileConfig.mobileHeightJoystick = positiveSize(joystick and joystick:getHeight(), 150)
+	mobileConfig.mobileWidthShortcuts = positiveSize(shortcuts and shortcuts:getWidth(), 175)
+	mobileConfig.mobileHeightShortcuts = positiveSize(shortcuts and shortcuts:getHeight(), 150)
+end
+
+local function moveMobileWindowsTo(fromPanel, toPanel)
+	if not fromPanel or fromPanel:isDestroyed() or not toPanel or toPanel:isDestroyed() then
+		return
+	end
+
+	local children = {}
+
+	for _, child in ipairs(fromPanel:getChildren()) do
+		local childId = child and child:getId()
+
+		if child and not child:isDestroyed() and childId ~= "mainoptionspanel" and childId ~= "sidebarFreeSpace" and not child._sidebarFreeSpaceWidget and not child._sidebarDragPlaceholder then
+			table.insert(children, child)
+		end
+	end
+
+	for index = #children, 1, -1 do
+		local child = children[index]
+
+		child.moveOnlyToMain = false
+		child:setParent(toPanel)
+
+		if toPanel:hasChild(child) then
+			toPanel:moveChildToIndex(child, 1)
+		end
+	end
+end
+
+local function ensureMobileMainWindow(widgetId, fallbackHeight)
+	if not gameRootPanel or gameRootPanel:isDestroyed() or not gameMainRightPanel or gameMainRightPanel:isDestroyed() then
+		return nil
+	end
+
+	local widget = gameRootPanel:recursiveGetChildById(widgetId)
+
+	if not widget or widget:isDestroyed() then
+		return nil
+	end
+
+	widget.moveOnlyToMain = true
+
+	if widget:getParent() ~= gameMainRightPanel then
+		widget:setParent(gameMainRightPanel)
+	end
+
+	widget:setVisible(true)
+
+	if (widget:getHeight() or 0) < 40 then
+		widget:setHeight(fallbackHeight)
+	end
+
+	return widget
+end
+
+local function showMobileMainWindows()
+	if not gameMainRightPanel or gameMainRightPanel:isDestroyed() then
+		return
+	end
+
+	local inventory = ensureMobileMainWindow("maininventorypanel", 161)
+	local minimap = ensureMobileMainWindow("mainmappanel", 115)
+
+	if inventory and gameMainRightPanel:hasChild(inventory) then
+		gameMainRightPanel:moveChildToIndex(inventory, 1)
+	end
+
+	if minimap and gameMainRightPanel:hasChild(minimap) then
+		gameMainRightPanel:moveChildToIndex(minimap, 1)
+	end
+
+	gameMainRightPanel:setOn(true)
+	gameMainRightPanel:setVisible(true)
+	gameMainRightPanel:setImageColor("white")
+
+	local height = (gameMainRightPanel:getPaddingTop() or 0) + (gameMainRightPanel:getPaddingBottom() or 0)
+
+	for _, child in ipairs(gameMainRightPanel:getChildren()) do
+		if child and not child:isDestroyed() and child:isVisible() and child:getId() ~= "mainoptionspanel" and not child._sidebarFreeSpaceWidget then
+			height = height + child:getHeight() + (child:getMarginTop() or 0) + (child:getMarginBottom() or 0)
+		end
+	end
+
+	height = math.max(height, 1)
+
+	local limit = gameRootPanel and gameRootPanel:getHeight() or 0
+
+	limit = limit - mobileConfig.mobileHeightShortcuts - 8
+
+	if limit > 120 and height > limit then
+		height = limit
+	end
+
+	gameMainRightPanel:setHeight(height)
+
+	if gameRightPanel and not gameRightPanel:isDestroyed() then
+		gameRightPanel:setPaddingTop(height)
+	end
+
+	local inventoryButton = modules.client_topmenu and modules.client_topmenu.getButton and modules.client_topmenu.getButton("inventory")
+
+	if inventoryButton and not inventoryButton:isDestroyed() then
+		inventoryButton:setOn(true)
+	end
+end
+
+local function collapseMobilePanel(panel, collapseHeight)
+	if not panel or panel:isDestroyed() then
+		return
+	end
+
+	panel:setOn(false)
+	panel:setVisible(false)
+
+	if collapseHeight then
+		panel:setHeight(0)
+	end
+end
+
+function applyMobileGameLayout()
+	if not g_platform.isMobile() or currentViewMode ~= 2 then
+		return
+	end
+
+	if not gameRootPanel or gameRootPanel:isDestroyed() or not gameRightPanel or gameRightPanel:isDestroyed() then
+		return
+	end
+
+	refreshMobileControlSizes()
+	moveMobileWindowsTo(gameLeftTopPanel, gameRightPanel)
+	moveMobileWindowsTo(gameRightTopPanel, gameRightPanel)
+	moveMobileWindowsTo(gameLeftPanel, gameRightPanel)
+	moveMobileWindowsTo(gameLeftExtraPanel, gameRightPanel)
+
+	local optionsPanel = gameMainRightPanel and gameMainRightPanel:getChildById("mainoptionspanel")
+
+	if (not optionsPanel or optionsPanel:isDestroyed()) and modules.game_mainpanel and modules.game_mainpanel.getMainOptionsPanel then
+		optionsPanel = modules.game_mainpanel.getMainOptionsPanel()
+	end
+
+	if optionsPanel and not optionsPanel:isDestroyed() then
+		optionsPanel:setHeight(0)
+		optionsPanel:setVisible(false)
+	end
+
+	collapseMobilePanel(gameLeftTopPanel, true)
+	collapseMobilePanel(gameRightTopPanel, true)
+	collapseMobilePanel(gameLeftPanel, false)
+	collapseMobilePanel(gameLeftExtraPanel, false)
+	showMobileMainWindows()
+
+	gameRightPanel:setOn(true)
+	gameRightPanel:setVisible(true)
+	gameRightPanel:setImageColor("white")
+	gameRightPanel:setClipping(true)
+	gameRightPanel:setMarginBottom(mobileConfig.mobileHeightShortcuts)
+
+	if modules.game_mainpanel and modules.game_mainpanel.toggleExtendedViewButtons then
+		modules.game_mainpanel.toggleExtendedViewButtons(true)
+	end
+
+	showMobileMainWindows()
+
+	if gameRightPanel.refreshSidebarFreeSpace then
+		gameRightPanel:refreshSidebarFreeSpace()
+	end
+
+	local topMenu = modules.client_topmenu and modules.client_topmenu.getTopMenu and modules.client_topmenu.getTopMenu()
+
+	if topMenu and not topMenu:isDestroyed() then
+		topMenu:show()
+		topMenu:breakAnchors()
+		topMenu:addAnchor(AnchorLeft, "parent", AnchorLeft)
+		topMenu:addAnchor(AnchorRight, "parent", AnchorRight)
+		topMenu:addAnchor(AnchorTop, "parent", AnchorTop)
+		topMenu:raise()
+
+		local toggles = topMenu:getChildById("topLeftTogglesPanel")
+
+		if toggles and not toggles:isDestroyed() then
+			toggles:raise()
+		end
+		gameRootPanel:breakAnchors()
+		gameRootPanel:addAnchor(AnchorLeft, "parent", AnchorLeft)
+		gameRootPanel:addAnchor(AnchorRight, "parent", AnchorRight)
+		gameRootPanel:addAnchor(AnchorBottom, "parent", AnchorBottom)
+		gameRootPanel:addAnchor(AnchorTop, "topMenu", AnchorBottom)
+	end
+
+	local shortcuts = modules.game_shortcuts and modules.game_shortcuts.getPanel and modules.game_shortcuts.getPanel()
+
+	if shortcuts and not shortcuts:isDestroyed() then
+		local overlay = shortcuts:getParent()
+
+		if overlay and not overlay:isDestroyed() then
+			overlay:raise()
+		end
+
+		shortcuts:raise()
+	end
+
+	if modules.game_cooldown and modules.game_cooldown.fitMobileCooldownWidth then
+		modules.game_cooldown.fitMobileCooldownWidth()
+	end
+
+	if gameMapPanel and not gameMapPanel:isDestroyed() then
+		gameMapPanel:setKeepAspectRatio(false)
+	end
+end
+
 function syncMainRightPanelClearance()
 	if not gameRightPanel or gameRightPanel:isDestroyed() then
 		return
@@ -762,6 +994,10 @@ function syncMainRightPanelClearance()
 	end
 
 	local mainHeight = gameMainRightPanel:getHeight() or 0
+
+	if not gameMainRightPanel:isExplicitlyVisible() then
+		mainHeight = 0
+	end
 
 	if mainHeight < 0 then
 		mainHeight = 0
@@ -4491,6 +4727,11 @@ function setupViewMode(mode)
 		gameBottomPanel:setImageColor("#ffffff88")
 
 		if g_platform.isMobile() then
+			refreshMobileControlSizes()
+			gameLeftPanel:setOn(false)
+			gameLeftPanel:setVisible(false)
+			gameLeftExtraPanel:setOn(false)
+			gameLeftExtraPanel:setVisible(false)
 			gameRightPanel:setMarginBottom(mobileConfig.mobileHeightShortcuts)
 			gameLeftPanel:setMarginBottom(mobileConfig.mobileHeightJoystick)
 		end
@@ -4847,6 +5088,10 @@ function testExtendedView(mode)
 		modules.game_inventory.extendedView(extendedView)
 		modules.client_topmenu.extendedView(extendedView)
 		modules.game_mainpanel.toggleExtendedViewButtons(extendedView)
+
+		if g_platform.isMobile() and extendedView then
+			applyMobileGameLayout()
+		end
 	end)
 end
 

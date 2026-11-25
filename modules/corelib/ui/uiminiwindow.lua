@@ -608,6 +608,10 @@ end
 
 function UIMiniWindow:onVisibilityChange(visible)
 	self:fitOnParent()
+
+	if visible then
+		self:fitOnScreen()
+	end
 end
 
 local DROP_HIGHLIGHT_COLOR = "#FFFFFF"

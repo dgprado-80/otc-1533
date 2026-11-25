@@ -253,8 +253,71 @@ function refreshConsoleAnchor()
 	console:addAnchor(AnchorTop, cooldownWindow:getId(), AnchorBottom)
 end
 
+function fitMobileCooldownWidth()
+	if not g_platform.isMobile() or not cooldownWindow or cooldownWindow:isDestroyed() or not contentsPanel or contentsPanel:isDestroyed() then
+		return
+	end
+
+	cooldownWindow:removeAnchor(AnchorRight)
+
+	local width = 8
+	local separator = contentsPanel:getChildById("groupIconSeparator")
+
+	local spellCount = 0
+
+	if cooldownPanel and not cooldownPanel:isDestroyed() then
+		spellCount = #cooldownPanel:getChildren()
+	end
+
+	if separator and not separator:isDestroyed() then
+		width = separator:getX() - contentsPanel:getX() + separator:getWidth() + 8
+	end
+
+	if width < 120 then
+		width = 280
+	end
+
+	width = width + spellCount * 25
+
+	local parent = cooldownWindow:getParent()
+
+	if parent and not parent:isDestroyed() then
+		width = math.min(width, math.max(parent:getWidth(), 1))
+	end
+
+	width = math.max(40, width)
+	cooldownWindow:setWidth(width)
+	contentsPanel:removeAnchor(AnchorRight)
+	contentsPanel:setWidth(math.max(1, width - 4))
+
+	if cooldownPanel and not cooldownPanel:isDestroyed() then
+		cooldownPanel:removeAnchor(AnchorRight)
+		cooldownPanel:setWidth(math.max(spellCount * 25, 1))
+	end
+
+	for _, child in ipairs(contentsPanel:getChildren()) do
+		local id = child:getId()
+
+		if id and id:sub(1, 12) == "progressRect" then
+			local icon = contentsPanel:getChildById("groupIcon" .. id:sub(13))
+
+			if icon and not icon:isDestroyed() then
+				child:breakAnchors()
+				child:setSize({
+					width = 20,
+					height = 20
+				})
+				child:addAnchor(AnchorHorizontalCenter, icon:getId(), AnchorHorizontalCenter)
+				child:addAnchor(AnchorVerticalCenter, icon:getId(), AnchorVerticalCenter)
+				child:setMarginTop(-1)
+			end
+		end
+	end
+end
+
 function online()
 	refreshConsoleAnchor()
+	addEvent(fitMobileCooldownWidth)
 
 	if not g_game.getFeature(GameSpellList) then
 		modules.client_options.setOption("showSpellGroupCooldowns", false)
@@ -526,6 +589,7 @@ function onSpellCooldown(iconId, duration)
 	cooldown[iconId] = true
 
 	sortSpellCooldownIcons()
+	fitMobileCooldownWidth()
 end
 
 function onSpellGroupCooldown(groupId, duration)

@@ -143,6 +143,7 @@ local function updateFiles(data, keepCurrentFiles)
 	local forceRestart = false
 	local reloadModules = false
 	local forceRestartPattern = {
+		"init.lua",
 		"corelib",
 		"updater",
 		"otmod"

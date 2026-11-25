@@ -157,6 +157,10 @@ function setSidebarVisible(visible)
 
 	healthManaController.ui:setVisible(visible)
 
+	if g_platform.isMobile() then
+		return
+	end
+
 	local shouldHide = not visible
 
 	if shouldHide == sidebarHidden then

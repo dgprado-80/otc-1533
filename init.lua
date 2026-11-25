@@ -1,16 +1,12 @@
 -- this is the first file executed when the application starts
 -- we have to load the first modules form here
 
--- updater
--- Windows production only. The Android APK does not auto-update.
--- devserver.flag next to the exe (gitignored) keeps this machine on the local login
--- and does not call the production updater.
-Services = {}
-
-local devServer = g_resources.fileExists("/devserver.flag")
-if not devServer and not g_platform.isMobile() then
-    Services.updater = "https://bestserverot.com.br/api/updater-1533.php"
-end
+-- Updates are installed by BestServerOt.exe. The game does not call the file updater.
+-- login-new.php also answers eventschedule and boostedcreature for the login screen.
+-- devserver.flag keeps this machine on the local game login.
+Services = {
+    status = "https://bestserverot.com.br/login-new.php"
+}
 
 --- Enables or disables the entire server configuration block.
 -- Set to `false` to disable all configuration below.
@@ -64,7 +60,7 @@ if ENABLE_SERVERS then
         Servers_init = {
             ["http://" .. localServerHost() .. "/login.php"] = {
                 port = 80,
-                protocol = 1533,
+                protocol = 1530,
                 httpLogin = true,
                 useAuthenticator = false
             }
@@ -73,7 +69,7 @@ if ENABLE_SERVERS then
         Servers_init = {
             ["https://bestserverot.com.br/login-new.php"] = {
                 port = 443,
-                protocol = 1533,
+                protocol = 1530,
                 httpLogin = true,
                 useAuthenticator = false
             }
@@ -85,9 +81,8 @@ g_app.setName("BestserverOt");
 g_app.setCompactName("crystalotc");
 g_app.setOrganizationName("Bestserver");
 
--- Server gate is 15.33-only. Assets still live under data/things/1530 until a dedicated
--- 1533 pack exists; things.lua falls back to that folder when /things/1533/ is missing.
-g_gameConfig.setLastSupportedVersion(1533)
+-- Server aligned to crystalserver main 15.30 (PR #1103 Winter removed). Assets: data/things/1530.
+g_gameConfig.setLastSupportedVersion(1530)
 
 g_app.hasUpdater = function()
     return (Services.updater and Services.updater ~= "" and g_modules.getModule("updater"))

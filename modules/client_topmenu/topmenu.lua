@@ -289,7 +289,9 @@ function online()
 			return
 		end
 
-		if modules.game_interface.currentViewMode ~= 2 and g_game.isOnline() then
+		if g_platform.isMobile() or modules.game_interface.currentViewMode == 2 then
+			show()
+		elseif g_game.isOnline() then
 			hide()
 		end
 
@@ -744,8 +746,10 @@ function extendedView(extendedView)
 
 	if extendedView then
 		topMenu:show()
+		topMenu:raise()
 		topMenu:addAnchor(AnchorLeft, "parent", AnchorLeft)
 		topMenu:addAnchor(AnchorRight, "parent", AnchorRight)
+		topMenu:addAnchor(AnchorTop, "parent", AnchorTop)
 		modules.game_interface.getRootPanel():addAnchor(AnchorTop, "topMenu", AnchorBottom)
 		pingLabel:setVisible(false)
 		fpsLabel:setVisible(false)

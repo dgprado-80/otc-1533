@@ -218,7 +218,10 @@ function reloadMainPanelSizes()
 	end
 
 	main_panel:setHeight(total_height + PANEL_CONSTANTS.MAIN_RIGHT_PANEL_EXTRA_HEIGHT)
-	right_panel:fitAll()
+
+	if not g_platform.isMobile() then
+		right_panel:fitAll()
+	end
 end
 
 local function refreshOptionsSizes()
@@ -555,10 +558,28 @@ end
 
 function toggleExtendedViewButtons(extended)
 	local optionsPanel = optionsController.ui.onPanel.options
-	local specialsPanel = optionsController.ui.onPanel.store
+	local specialsPanel = optionsController.ui.onPanel.specials
 	local rightGamePanel = modules.client_topmenu.getRightGameButtonsPanel()
 
 	if extended then
+		local function showMovedButton(button)
+			if not g_platform.isMobile() then
+				return
+			end
+
+			local id = button:getId()
+			local cfg = id and buttonConfigs[id]
+			local visible = button:isVisible()
+
+			if cfg and cfg.visible ~= nil then
+				visible = cfg.visible
+			elseif id and table.find(buttonOrder, id) then
+				visible = true
+			end
+
+			button:setVisible(visible)
+		end
+
 		local optionChildren = optionsPanel:getChildren()
 
 		for _, button in ipairs(optionChildren) do
@@ -566,6 +587,7 @@ function toggleExtendedViewButtons(extended)
 				button.originalPanel = "options"
 
 				rightGamePanel:addChild(button)
+				showMovedButton(button)
 			end
 		end
 
@@ -576,6 +598,7 @@ function toggleExtendedViewButtons(extended)
 				button.originalPanel = "specials"
 
 				rightGamePanel:addChild(button)
+				showMovedButton(button)
 			end
 		end
 

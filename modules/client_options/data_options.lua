@@ -1478,12 +1478,40 @@ return {
 	showLeftExtraPanel = {
 		value = false,
 		action = function(value, options, controller, panels, extraWidgets)
+			if g_platform.isMobile() then
+				local panel = modules.game_interface.getLeftExtraPanel()
+
+				if panel then
+					panel:setOn(false)
+				end
+
+				if modules.game_interface and modules.game_interface.applyMobileGameLayout then
+					modules.game_interface.applyMobileGameLayout()
+				end
+
+				return
+			end
+
 			modules.game_interface.getLeftExtraPanel():setOn(value)
 		end
 	},
 	showLeftPanel = {
 		value = true,
 		action = function(value, options, controller, panels, extraWidgets)
+			if g_platform.isMobile() then
+				local panel = modules.game_interface.getLeftPanel()
+
+				if panel then
+					panel:setOn(false)
+				end
+
+				if modules.game_interface and modules.game_interface.applyMobileGameLayout then
+					modules.game_interface.applyMobileGameLayout()
+				end
+
+				return
+			end
+
 			modules.game_interface.getLeftPanel():setOn(value)
 		end
 	},
@@ -1496,6 +1524,35 @@ return {
 	showRightHorizontalPanel = {
 		value = true,
 		action = function(value, options, controller, panels, extraWidgets)
+			if g_platform.isMobile() then
+				local panel = modules.game_interface.getRightTopPanel()
+				local rightPanel = modules.game_interface.getRightPanel()
+
+				if panel and rightPanel then
+					local children = panel:getChildren()
+
+					for i = #children, 1, -1 do
+						local child = children[i]
+
+						if child then
+							child.moveOnlyToMain = false
+							child:setParent(rightPanel)
+							rightPanel:moveChildToIndex(child, 1)
+						end
+					end
+
+					panel:setOn(false)
+					panel:setHeight(0)
+					panel:setVisible(false)
+				end
+
+				if modules.game_interface and modules.game_interface.applyMobileGameLayout then
+					modules.game_interface.applyMobileGameLayout()
+				end
+
+				return
+			end
+
 			local panel = modules.game_interface.getRightTopPanel()
 
 			if panel then
@@ -1528,6 +1585,35 @@ return {
 	showLeftHorizontalPanel = {
 		value = true,
 		action = function(value, options, controller, panels, extraWidgets)
+			if g_platform.isMobile() then
+				local panel = modules.game_interface.getLeftTopPanel()
+				local rightPanel = modules.game_interface.getRightPanel()
+
+				if panel and rightPanel then
+					local children = panel:getChildren()
+
+					for i = #children, 1, -1 do
+						local child = children[i]
+
+						if child then
+							child.moveOnlyToMain = false
+							child:setParent(rightPanel)
+							rightPanel:moveChildToIndex(child, 1)
+						end
+					end
+
+					panel:setOn(false)
+					panel:setHeight(0)
+					panel:setVisible(false)
+				end
+
+				if modules.game_interface and modules.game_interface.applyMobileGameLayout then
+					modules.game_interface.applyMobileGameLayout()
+				end
+
+				return
+			end
+
 			local panel = modules.game_interface.getLeftTopPanel()
 
 			if panel then

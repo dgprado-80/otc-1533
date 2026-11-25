@@ -138,31 +138,41 @@ NewMainWindow
         anchors.top: statusBig.bottom
         margin-left: 10
         margin-top: 2
+        width: 210
         font: verdana-10px-rounded
         color: #c8c8c8ff
-        text-auto-resize: true
+        text-wrap: true
+        text-auto-resize: false
         !text: tr('Support BestServer and unlock exclusive benefits')
 
       Label
         id: systemTitle
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.top: parent.top
+        margin-left: 240
+        margin-right: 210
         margin-top: 16
         font: Verdana Bold-13px
         color: #ffd76aff
         text-align: center
-        text-auto-resize: true
+        text-wrap: true
+        text-auto-resize: false
         !text: tr('Best Partner Passport')
 
       Label
         id: systemSubtitle
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.top: systemTitle.bottom
+        margin-left: 240
+        margin-right: 210
         margin-top: 4
         font: verdana-10px-rounded
         color: #e0c070ff
         text-align: center
-        text-auto-resize: true
+        text-wrap: true
+        text-auto-resize: false
         !text: tr('30 days of exclusive power on all characters')
 
       Label
