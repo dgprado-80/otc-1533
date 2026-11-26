@@ -83,6 +83,8 @@ ControlButtonNames = {
 	compendiumDialog = "Compendium",
 	helperButton = "Helper Stats",
 	botButton = "Bot",
+	joystickButton = "Joystick",
+	actionButtons = "Action buttons",
 	bosstiarytrackerButton = "Bosstiary Tracker",
 	bosstiary = "Bosstiary",
 	-- BestServer custom side buttons (mods/game_sidebuttons)
@@ -112,6 +114,8 @@ local PANEL_CONSTANTS = {
 }
 local showEveryShortcut = false
 local DEFAULT_SHORTCUT_ORDER = {
+	"joystickButton",
+	"actionButtons",
 	"skillsButton",
 	"battleButton",
 	"spellListWidget",

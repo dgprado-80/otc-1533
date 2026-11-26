@@ -10,6 +10,7 @@ local botStorageFile = nil
 local botWebSockets = {}
 local botMessages = nil
 local botTabs = nil
+local updateBotTabsHeight
 local botExecutor = nil
 
 local configList = nil
@@ -84,6 +85,11 @@ function init()
   botMessages = contentsPanel.messages
   botTabs = contentsPanel.botTabs
   botTabs:setContentWidget(contentsPanel.botPanel)
+  botTabs.onGeometryChange = function(widget, oldRect, newRect)
+    if not oldRect or oldRect.width ~= newRect.width then
+      updateBotTabsHeight()
+    end
+  end
 
   editWindow = g_ui.displayUI('edit')
   editWindow:hide()
@@ -159,21 +165,17 @@ function clear()
   end
 end
 
-local function updateBotTabsHeight()
-  botTabs:updateLayout()
-  local layout = botTabs:getLayout()
-  if not botTabs:isOn() or not (layout and layout:isUIGridLayout()) then
-    botTabs:setHeight(0)
+updateBotTabsHeight = function()
+  if not botTabs or botTabs:isDestroyed() or not botTabs:isOn() then
+    if botTabs and not botTabs:isDestroyed() then
+      botTabs:setHeight(0)
+    end
     return
   end
 
-  local lines = layout:getNumLines()
-  if lines <= 0 then
-    botTabs:setHeight(0)
-    return
+  if botTabs:getHeight() ~= 21 then
+    botTabs:setHeight(21)
   end
-
-  botTabs:setHeight(lines * layout:getCellSize().height)
 end
 
 function loadConfigsList()
@@ -295,6 +297,7 @@ function refresh()
   end
 
   updateBotTabsHeight()
+  scheduleEvent(updateBotTabsHeight, 50)
   statusLabel:setOn(false)
   botExecutor = result
   check()

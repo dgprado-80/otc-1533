@@ -25,3 +25,14 @@ UIWidget
       image-fixed-ratio: true
       phantom: true
       focusable: true
+
+  Button
+    id: dragHandle
+    size: 72 20
+    visible: false
+    background-color: #000000cc
+    color: #f0f0f0
+    font: verdana-11px-rounded
+    text: :::
+    phantom: false
+    focusable: true

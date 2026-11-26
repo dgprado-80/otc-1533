@@ -120,7 +120,7 @@ void AndroidManager::unZipAssetData() {
 
     // Bump when data.zip changes. The previous build skipped extraction once
     // init.lua existed, so an updated APK kept the old files and crashed.
-    constexpr std::string_view assetStamp = "2026-11-25-joystick";
+    constexpr std::string_view assetStamp = "2026-11-25-action-toggle";
     const std::filesystem::path stampFile { destFolder + ".asset_stamp" };
     if (std::filesystem::exists(stampFile)) {
         std::ifstream stampIn(stampFile);

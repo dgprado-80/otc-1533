@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Como usar o CaveBot — BestServerOt</title>
+  <style>
+    :root {
+      --ink: #241c16;
+      --muted: #5c5146;
+      --paper: #f4efe6;
+      --card: #fffdf8;
+      --line: #e3d6c6;
+      --brown: #8a5524;
+      --header: #1b1612;
+      --gold: #f0e2c8;
+      --green: #176b3a;
+      --green-bg: #e5f3ea;
+      --amber: #8a5a12;
+      --amber-bg: #fbf3e4;
+      --red: #8e2f2a;
+      --red-bg: #f8ebe8;
+      --shadow: 0 18px 40px rgba(48, 28, 10, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1200px 420px at 50% -80px, rgba(215, 185, 138, 0.18), transparent 60%),
+        var(--paper);
+      color: var(--ink);
+      font: 17px/1.6 "Segoe UI", "Helvetica Neue", sans-serif;
+    }
+
+    a { color: var(--brown); }
+    a:hover { color: #5c3816; }
+    :focus-visible {
+      outline: 2px solid var(--brown);
+      outline-offset: 3px;
+    }
+
+    .skip {
+      position: absolute;
+      left: 12px;
+      top: -40px;
+      background: #fff;
+      padding: 8px 12px;
+      z-index: 5;
+    }
+    .skip:focus { top: 12px; }
+
+    header.top {
+      background: var(--header);
+      color: var(--gold);
+      padding: 42px 24px 36px;
+      border-bottom: 4px solid #8a6233;
+    }
+    .top-inner { max-width: 1080px; margin: 0 auto; }
+    .kicker {
+      margin: 0 0 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: #e7d3b0;
+    }
+    h1 {
+      margin: 0;
+      font-family: Palatino, "Palatino Linotype", Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(36px, 5vw, 54px);
+      line-height: 1.05;
+      color: #fffaf3;
+      letter-spacing: -0.02em;
+    }
+    .lede {
+      max-width: 640px;
+      margin: 16px 0 0;
+      color: #eadcc6;
+      font-size: 18px;
+    }
+    .path {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 26px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .path li {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(240, 226, 200, 0.22);
+      color: #f6ecde;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+    .path strong { color: #fff; font-weight: 650; }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 760px);
+      gap: 40px;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 24px 88px;
+    }
+
+    nav.toc {
+      position: sticky;
+      top: 18px;
+      align-self: start;
+      padding-top: 6px;
+    }
+    nav.toc p {
+      margin: 0 0 8px;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    nav.toc ol {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-left: 1px solid var(--line);
+    }
+    nav.toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 7px 0 7px 14px;
+      font-size: 15px;
+    }
+    nav.toc a:hover { color: var(--brown); }
+    nav.toc span {
+      display: inline-block;
+      width: 1.4em;
+      color: var(--brown);
+      font-variant-numeric: tabular-nums;
+    }
+
+    main section { margin: 0 0 54px; }
+    main h2 {
+      font-family: Palatino, "Palatino Linotype", Georgia, serif;
+      font-size: 32px;
+      line-height: 1.15;
+      font-weight: 600;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--brown);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .intro { margin: 0 0 18px; color: var(--ink); }
+    h3 {
+      font-size: 18px;
+      margin: 26px 0 8px;
+    }
+    p { margin: 0 0 12px; }
+    ol.steps, ul.clean { margin: 0 0 16px; padding-left: 1.2em; }
+    ol.steps li, ul.clean li { margin: 0 0 8px; }
+    ol.steps li::marker { color: var(--brown); font-weight: 700; }
+
+    .card, .callout, .screen, table, .switches {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    .card { padding: 18px 18px 8px; margin: 0 0 16px; }
+
+    .switches {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+      margin: 0 0 16px;
+    }
+    .sw { padding: 14px 14px 12px; border-radius: 12px; background: #faf6f0; }
+    .sw .where {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .sw .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 10px 0 8px;
+    }
+    .sw .name {
+      font-weight: 650;
+      font-size: 15px;
+    }
+    .sw p { margin: 0; font-size: 14.5px; color: var(--muted); }
+    .pill {
+      display: inline-block;
+      min-width: 42px;
+      text-align: center;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .pill.on { background: var(--green); }
+    .pill.off { background: var(--red); }
+
+    .callout { padding: 14px 16px; margin: 0 0 16px; }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .callout p:last-child { margin-bottom: 0; }
+    .see { background: var(--green-bg); border-color: #c9e4d2; }
+    .see strong { color: var(--green); }
+    .watch { background: var(--amber-bg); border-color: #edd7b0; }
+    .watch strong { color: var(--amber); }
+    .stop { background: var(--red-bg); border-color: #efcfcb; }
+    .stop strong { color: var(--red); }
+
+    .ui {
+      display: inline-block;
+      padding: 0 6px;
+      border-radius: 5px;
+      background: #f3e7d4;
+      border: 1px solid #e0cdb0;
+      color: #3f2a16;
+      font-size: 0.92em;
+      font-weight: 650;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
+    .errline {
+      display: block;
+      margin: 8px 0;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #efcfcb;
+      color: #6d2420;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .screen {
+      background: #12100e;
+      color: #d9d3c8;
+      padding: 16px 16px 14px;
+      margin: 8px 0 16px;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .screen .bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #b7aa98;
+      font-family: "Segoe UI", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .screen ol { list-style: none; margin: 0; padding: 0; }
+    .screen li {
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+    .screen li.here { background: rgba(255, 255, 255, 0.08); }
+    .c-goto { color: #7dcc78; }
+    .c-use { color: #ffb272; }
+    .c-with { color: #eeb292; }
+    .c-label { color: #ffe56a; }
+    .c-say { color: #ff8ad8; }
+    .screen .note {
+      margin: 12px 0 0;
+      color: #b7aa98;
+      font-family: "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      margin: 0 0 16px;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: #faf6f0;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .scroll { overflow-x: auto; border-radius: 16px; margin: 0 0 16px; }
+    .scroll table { margin: 0; box-shadow: none; }
+
+    .checks { list-style: none; margin: 0; padding: 4px 0 8px; }
+    .checks li {
+      position: relative;
+      padding: 0 0 10px 28px;
+    }
+    .checks li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--brown);
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .problems { display: grid; gap: 10px; }
+    .problems article {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px 4px;
+    }
+    .problems h3 { margin: 0 0 6px; font-size: 17px; }
+
+    footer.page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .shell { grid-template-columns: 1fr; gap: 18px; padding-top: 22px; }
+      nav.toc { position: static; }
+      nav.toc ol { display: flex; flex-wrap: wrap; gap: 6px 14px; border-left: 0; }
+      nav.toc a { padding: 4px 0; }
+      .switches { grid-template-columns: 1fr; }
+      h1 { font-size: 36px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      header.top { border: 0; padding-bottom: 12px; }
+      nav.toc, .skip { display: none; }
+      .shell { display: block; max-width: none; padding: 0 0 20px; }
+      .card, .callout, .screen, table, .switches, .problems article { box-shadow: none; }
+      a { text-decoration: none; color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+  <header class="top">
+    <div class="top-inner">
+      <p class="kicker">BestServerOt · Guia do jogador</p>
+      <h1>Como usar o CaveBot</h1>
+      <p class="lede">O CaveBot repete um caminho. Quem escolhe o monstro, ataca e pega o loot é a aba Target. Os dois ficam na mesma janela Bot.</p>
+      <ol class="path">
+        <li><strong>1</strong> Ligar o bot</li>
+        <li><strong>2</strong> Gravar a rota</li>
+        <li><strong>3</strong> Ensinar o ataque</li>
+        <li><strong>4</strong> Soltar a hunt</li>
+      </ol>
+    </div>
+  </header>
+
+  <div class="shell">
+    <nav class="toc" aria-label="Seções do guia">
+      <p>Neste guia</p>
+      <ol>
+        <li><a href="#ideia"><span>01</span>A ideia</a></li>
+        <li><a href="#interruptores"><span>02</span>Três botões On</a></li>
+        <li><a href="#abrir"><span>03</span>Abrir o bot</a></li>
+        <li><a href="#gravar"><span>04</span>Gravar a rota</a></li>
+        <li><a href="#lista"><span>05</span>A lista</a></li>
+        <li><a href="#atacar"><span>06</span>Atacar e loot</a></li>
+        <li><a href="#ligar"><span>07</span>Soltar</a></li>
+        <li><a href="#problemas"><span>08</span>Se travar</a></li>
+        <li><a href="#referencia"><span>09</span>Referência</a></li>
+      </ol>
+    </nav>
+
+    <main id="conteudo">
+      <section id="ideia">
+        <p class="eyebrow">01 · Antes de clicar</p>
+        <h2>O CaveBot não caça sozinho</h2>
+        <p class="intro">Ele só executa a lista, de cima para baixo, e volta para a primeira linha quando a lista acaba. Ataque, cura e loot são outras partes da mesma janela.</p>
+        <div class="switches" style="box-shadow:none">
+          <div class="sw">
+            <span class="where">Aba Cave</span>
+            <div class="row"><span class="name">Caminho</span></div>
+            <p>Anda pelos pontos, usa porta, escada, corda e pá.</p>
+          </div>
+          <div class="sw">
+            <span class="where">Aba Target</span>
+            <div class="row"><span class="name">Combate</span></div>
+            <p>Escolhe o monstro, ataca, segue e abre o corpo.</p>
+          </div>
+          <div class="sw">
+            <span class="where">Aba HP</span>
+            <div class="row"><span class="name">Cura</span></div>
+            <p>Poção, comida e magia de vida. Ligue isso antes da rota.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="interruptores">
+        <p class="eyebrow">02 · O ponto que mais confunde</p>
+        <h2>Existem três botões On</h2>
+        <p class="intro">Os três precisam estar verdes ao mesmo tempo. Um deles ligado não substitui os outros.</p>
+        <div class="switches">
+          <div class="sw">
+            <span class="where">Topo da janela Bot</span>
+            <div class="row"><span class="name">vBot_4.8</span><span class="pill on">On</span></div>
+            <p>Liga o sistema. Sem este, as abas não funcionam.</p>
+          </div>
+          <div class="sw">
+            <span class="where">Aba Cave, ao lado do nome da rota</span>
+            <div class="row"><span class="name">minha hunt</span><span class="pill on">On</span></div>
+            <p>Liga só o caminho. Durante a gravação ele fica Off.</p>
+          </div>
+          <div class="sw">
+            <span class="where">Aba Target, ao lado do nome</span>
+            <div class="row"><span class="name">monstros</span><span class="pill on">On</span></div>
+            <p>Liga o ataque. Sem este, o personagem só passeia.</p>
+          </div>
+        </div>
+        <div class="callout watch">
+          <strong>Para parar</strong>
+          <p>Mude o botão da rota, na aba Cave, para <span class="pill off">Off</span>. O personagem para de seguir a lista. O botão do topo também desliga tudo de uma vez.</p>
+        </div>
+      </section>
+
+      <section id="abrir">
+        <p class="eyebrow">03 · Um minuto</p>
+        <h2>Abrir o bot</h2>
+        <ol class="steps">
+          <li>Entre no jogo com o personagem.</li>
+          <li>Clique no ícone <span class="ui">Bot</span> na barra de atalhos do topo.</li>
+          <li>No menu da janela <span class="ui">Bot</span>, escolha <span class="ui">vBot_4.8</span>.</li>
+          <li>Clique no botão da direita até ele ficar <span class="pill on">On</span>.</li>
+        </ol>
+        <div class="callout see">
+          <strong>O que você deve ver</strong>
+          <p>As abas <span class="ui">Main</span>, <span class="ui">Cave</span>, <span class="ui">Target</span>, <span class="ui">HP</span> e <span class="ui">Tools</span>. Se o botão ainda diz Off, o guia inteiro fica parado.</p>
+        </div>
+        <div class="callout stop">
+          <strong>Se aparecer este aviso</strong>
+          <p class="errline">Please create a new TargetBot config and reset bot</p>
+          <p>Vá na aba Target, clique em <span class="ui">Add</span>, dê um nome e confirme. Depois desligue o botão do topo e ligue de novo.</p>
+        </div>
+        <p>Existe também a config <span class="ui">cavebot_1.3</span>. Ela grava rota do mesmo jeito, com menos botões. Este guia usa a <span class="ui">vBot_4.8</span>.</p>
+      </section>
+
+      <section id="gravar">
+        <p class="eyebrow">04 · A parte principal</p>
+        <h2>Gravar o caminho andando</h2>
+        <p class="intro">Você anda uma vez. O cliente anota os pontos. Não precisa digitar coordenada.</p>
+        <ol class="steps">
+          <li>Abra a aba <span class="ui">Cave</span>.</li>
+          <li>Clique em <span class="ui">Add</span>, escreva um nome, por exemplo <span class="ui">rotworms</span>, e confirme.</li>
+          <li>Deixe o botão dessa rota em <span class="pill off">Off</span>.</li>
+          <li>Clique em <span class="ui">Show waypoints editor</span>.</li>
+          <li>Fique parado no sqm onde a hunt deve começar.</li>
+          <li>Ligue <span class="ui">Auto Recording</span>.</li>
+          <li>Ande a rota inteira, inclusive a volta até o começo.</li>
+          <li>Desligue <span class="ui">Auto Recording</span>. A lista é salva sozinha.</li>
+        </ol>
+        <div class="callout see">
+          <strong>O que entra na lista</strong>
+          <p>A cada alguns passos, uma linha verde <span class="ui">goto:x,y,z</span>. Se você mudar de andar ou usar um teleporte, a linha do sqm anterior ganha um <span class="ui">,0</span> no final. Usar uma porta, escada ou alavanca grava <span class="ui">use:x,y,z</span>. Usar corda ou pá no chão grava <span class="ui">usewith:id,x,y,z</span>.</p>
+        </div>
+        <div class="callout watch">
+          <strong>Porta fechada</strong>
+          <p>Enquanto grava, use a porta. Sem a linha <span class="ui">use</span>, na volta ela fecha e o personagem fica parado na frente.</p>
+        </div>
+        <div class="callout stop">
+          <strong>A gravação não anota nada</strong>
+          <p>O CaveBot estava ligado. A gravação só funciona com a rota em Off. Ligar <span class="ui">Auto Recording</span> desliga a rota de propósito. Grave primeiro, ligue a rota depois.</p>
+        </div>
+        <h3>Como a lista se repete</h3>
+        <p>No fim, ele volta para a primeira linha. Por isso a gravação precisa terminar perto de onde começou. Se você andou da cidade até a cave e gravou isso também, ele vai voltar para a cidade a cada volta.</p>
+        <p>Para caçar em círculo e passar pela cidade só uma vez, marque o começo do círculo e mande a lista pular para essa marca. Fique no primeiro sqm da hunt, clique em <span class="ui">label</span> e confirme o nome <span class="ui">hunt</span>. No fim da lista, clique em <span class="ui">go to label</span> e escreva o mesmo nome.</p>
+      </section>
+
+      <section id="lista">
+        <p class="eyebrow">05 · Ler o que foi gravado</p>
+        <h2>A lista é a rota</h2>
+        <p class="intro">A linha marcada é o passo atual. Dois cliques abrem a edição. Os botões <span class="ui">move up</span>, <span class="ui">move down</span> e <span class="ui">remove</span> mudam a ordem ou apagam a linha.</p>
+        <div class="screen" aria-label="Exemplo de lista do CaveBot">
+          <div class="bar"><span>Cave · rotworms</span><span>passo atual marcado</span></div>
+          <ol>
+            <li class="c-label">label:cidade</li>
+            <li class="c-goto">goto:33210,31640,7</li>
+            <li class="c-use">use:33218,31644,7</li>
+            <li class="c-goto">goto:33218,31644,8,0</li>
+            <li class="c-label here">label:hunt</li>
+            <li class="c-goto">goto:33240,31660,8</li>
+            <li class="c-goto">goto:33255,31672,8</li>
+            <li class="c-with">usewith:3003,33260,31680,8</li>
+            <li class="c-label">gotolabel:hunt</li>
+          </ol>
+          <p class="note">A porta foi usada. O <span class="c-goto">,0</span> faz ele pisar no sqm da descida. O <span class="c-label">gotolabel:hunt</span> volta para o círculo e não refaz o caminho da cidade.</p>
+        </div>
+        <p>Para colocar um ponto com a mão: fique em cima do sqm, clique em <span class="ui">go to</span> e confirme. O editor já preenche a sua posição. O texto <span class="ui">Position: x, y, z</span>, no topo do editor, mostra onde você está.</p>
+        <p>Escada, corda ou pá em que ele para ao lado e não usa: edite o <span class="ui">goto</span> de antes e acrescente <span class="ui">,0</span>. Fica <span class="ui">goto:x,y,z,0</span>. Esse zero manda parar exatamente naquele sqm.</p>
+      </section>
+
+      <section id="atacar">
+        <p class="eyebrow">06 · Sem isto ele só anda</p>
+        <h2>Ensinar quem atacar</h2>
+        <ol class="steps">
+          <li>Abra a aba <span class="ui">Target</span>.</li>
+          <li>Clique em <span class="ui">Add</span>, dê um nome, por exemplo <span class="ui">monstros</span>, e confirme.</li>
+          <li>Clique em <span class="ui">Show target editor</span> e depois em <span class="ui">Add</span>.</li>
+          <li>Em <span class="ui">Target name</span>, escreva o nome do monstro. Pode ser vários, separados por vírgula: <span class="ui">rotworm, carrion worm</span>. Um <span class="ui">*</span> vale para qualquer letra, então <span class="ui">rotworm*</span> pega as variações do nome.</li>
+          <li>Deixe <span class="ui">Chase</span> ligado se ele deve correr atrás. O restante pode ficar no padrão na primeira hunt.</li>
+          <li>Clique em <span class="ui">Ok</span>.</li>
+          <li>Mude o botão dessa config para <span class="pill on">On</span>.</li>
+        </ol>
+        <div class="callout see">
+          <strong>O que acontece no jogo</strong>
+          <p>Ele marca o monstro e ataca com o ataque normal. Com Chase ligado, segue o alvo. A linha da aba mostra o nome do alvo e um número de perigo.</p>
+        </div>
+        <h3>Loot</h3>
+        <p>Ainda na aba Target, mais abaixo:</p>
+        <ul class="clean">
+          <li>Arraste cada item desejado para <span class="ui">Items to loot</span>.</li>
+          <li>Arraste a backpack para <span class="ui">Containers for loot</span>. Sem backpack, ele não pega nada.</li>
+          <li><span class="ui">Loot every item, except these</span> inverte a lista: passa a pegar tudo, menos o que estiver nos quadrados.</li>
+          <li><span class="ui">Min. capacity</span> começa em 100. Se a capacidade livre ficar abaixo disso, ele para de abrir corpos.</li>
+          <li><span class="ui">Max. danger</span> começa em 10. O perigo da tela é a soma do Danger de cada monstro visado. Cada um começa em 1. Se a soma passar do máximo, ele espera para lootear.</li>
+        </ul>
+        <div class="callout watch">
+          <strong>Cura</strong>
+          <p>Abra a aba <span class="ui">HP</span> e ligue a cura e a comida do seu personagem antes de soltar a rota. O CaveBot não cura.</p>
+        </div>
+      </section>
+
+      <section id="ligar">
+        <p class="eyebrow">07 · A última checagem</p>
+        <h2>Soltar a hunt</h2>
+        <div class="card">
+          <ul class="checks">
+            <li>O botão do topo da janela está <span class="pill on">On</span> em <span class="ui">vBot_4.8</span>.</li>
+            <li>A config da aba Target está <span class="pill on">On</span> e tem pelo menos um monstro.</li>
+            <li>A cura da aba HP está ligada.</li>
+            <li><span class="ui">Auto Recording</span> está desligado.</li>
+            <li>O personagem está perto da primeira linha, ou da linha <span class="ui">label:hunt</span>.</li>
+          </ul>
+        </div>
+        <ol class="steps">
+          <li>Na aba Cave, clique na linha por onde ele deve começar.</li>
+          <li>Mude o botão da rota de <span class="pill off">Off</span> para <span class="pill on">On</span>.</li>
+        </ol>
+        <p>A linha marcada desce conforme cada passo termina. Monstro no caminho interrompe a caminhada: ele luta, pega o loot e depois continua a lista.</p>
+      </section>
+
+      <section id="problemas">
+        <p class="eyebrow">08 · O que costuma acontecer</p>
+        <h2>Se travar</h2>
+        <div class="problems">
+          <article>
+            <h3>Anda e não bate</h3>
+            <p>A config da aba Target está Off, ou o nome do monstro não é o nome que aparece em cima da criatura. Confira vírgula e maiúsculas. <span class="ui">Dragon</span> não encontra <span class="ui">Dragon Lord</span>.</p>
+          </article>
+          <article>
+            <h3>Para na frente da escada</h3>
+            <p>A linha anterior precisa ser <span class="ui">goto:x,y,z,0</span>, e a descida ou a corda precisa ter uma linha <span class="ui">use</span> ou <span class="ui">usewith</span>. Os dois cliques na linha abrem a edição.</p>
+          </article>
+          <article>
+            <h3>Pula passo ou anda aos trancos</h3>
+            <p>Em <span class="ui">Show config</span>, aumente <span class="ui">Walk delay</span>. O padrão é 10. Suba aos poucos.</p>
+          </article>
+          <article>
+            <h3>Não atravessa fogo ou energia</h3>
+            <p><span class="ui">Ignore fields</span> deixa ele passar por campo. Só ligue se o personagem aguenta esse piso.</p>
+          </article>
+          <article>
+            <h3>Um ponto ficou atrás de uma parede</h3>
+            <p><span class="ui">Skip blocked path</span> abandona o ponto sem caminho e segue a lista. Apagar a linha errada também resolve.</p>
+          </article>
+          <article>
+            <h3>Volta para a cidade a cada volta</h3>
+            <p>A caminhada da cidade ficou no meio do círculo. Coloque <span class="ui">label:hunt</span> no primeiro ponto da cave e <span class="ui">gotolabel:hunt</span> na última linha.</p>
+          </article>
+          <article>
+            <h3>Não pega loot</h3>
+            <p>Falta item em <span class="ui">Items to loot</span>, ou falta a backpack em <span class="ui">Containers for loot</span>. Também para se a capacidade livre estiver abaixo de <span class="ui">Min. capacity</span>, ou se o número de Danger da aba passar de <span class="ui">Max. danger</span>.</p>
+          </article>
+          <article>
+            <h3>O aviso do TargetBot voltou</h3>
+            <p>Crie a config na aba Target com <span class="ui">Add</span>. Em seguida desligue e ligue o botão do topo da janela. Só criar o arquivo não recarrega o bot.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="referencia">
+        <p class="eyebrow">09 · Para consultar</p>
+        <h2>Botões da rota</h2>
+        <p class="intro">Estes são os da hunt do dia a dia. O editor tem outros, de banco, depósito e viagem. A caçada não precisa deles.</p>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Na lista</th>
+                <th>Botão</th>
+                <th>Serve para</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="ui">goto:x,y,z</span></td>
+                <td>go to</td>
+                <td>Andar até o ponto. O gravador cria sozinho.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">goto:x,y,z,0</span></td>
+                <td>go to</td>
+                <td>Parar exatamente nesse sqm. Escada, corda e pá.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">use:x,y,z</span></td>
+                <td>use</td>
+                <td>Usar o sqm. Porta, escada, alavanca, buraco.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">usewith:id,x,y,z</span></td>
+                <td>use with</td>
+                <td>Usar um item naquele sqm. O número é o id da corda ou da pá.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">label:nome</span></td>
+                <td>label</td>
+                <td>Marcar um ponto. Não move o personagem.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">gotolabel:nome</span></td>
+                <td>go to label</td>
+                <td>Pular para a marca com o mesmo nome.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">delay:1000</span></td>
+                <td>delay</td>
+                <td>Esperar. O número é em milissegundos. 1000 é um segundo.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">say:texto</span></td>
+                <td>say</td>
+                <td>Falar no jogo.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">npcsay:texto</span></td>
+                <td>npcsay</td>
+                <td>Responder o NPC na conversa, não no chat aberto.</td>
+              </tr>
+              <tr>
+                <td><span class="ui">follow:nome</span></td>
+                <td>follow</td>
+                <td>Seguir uma criatura com esse nome.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Show config</h3>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr><th>Opção</th><th>Padrão</th><th>Quando mexer</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Walk delay</td><td>10</td><td>O passo está rápido demais ou falhando.</td></tr>
+              <tr><td>Use map click</td><td>Off</td><td>Deixe desligado. O clique no mapa erra mais porta e escada.</td></tr>
+              <tr><td>Ignore fields</td><td>Off</td><td>A rota cruza fogo, energia ou veneno e o personagem pode passar.</td></tr>
+              <tr><td>Skip blocked path</td><td>Off</td><td>Um ponto ficou sem caminho e ele insiste nele.</td></tr>
+              <tr><td>Delay after use</td><td>400</td><td>A porta ou a escada ainda não abriu quando ele tenta o próximo passo.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <strong>Resumo de uma frase</strong>
+          <p>Grave andando, com a rota desligada. Ensine o monstro na aba Target. Ligue a cura. Aí sim mude a rota para On.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer class="page">Guia do CaveBot do BestServerOt. Os nomes dos botões aparecem em inglês na janela do bot.</footer>
+</body>
+</html>

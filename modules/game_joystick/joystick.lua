@@ -1,6 +1,6 @@
 ﻿-- chunkname: @/game_joystick/joystick.lua
 
-local overlay, keypad, keypadUpdateEvent
+local overlay, keypad, dragHandle, joystickShortcut, keypadUpdateEvent
 local keypadMousePos = {
 	x = 0.5,
 	y = 0.5
@@ -8,7 +8,14 @@ local keypadMousePos = {
 local firstStep = true
 local pressStartedAt = 0
 local moveListener
+local draggingKeypad = false
+local dragOffset = {
+	x = 0,
+	y = 0
+}
 local HOLD_BEFORE_REPEAT_MS = 280
+local JOYSTICK_CHROME_HEIGHT = 22
+local JOYSTICK_SETTINGS = "joystickLayout"
 
 function init()
 	if not g_platform.isMobile() then
@@ -17,12 +24,20 @@ function init()
 
 	overlay = g_ui.displayUI("joystick")
 	keypad = overlay.keypad
+	dragHandle = overlay.dragHandle
 
 	connect(keypad, {
 		onMousePress = onKeypadTouchPress,
 		onMouseRelease = onKeypadTouchRelease,
-		onMouseMove = onKeypadTouchMove
+		onMouseMove = onKeypadTouchMove,
+		onGeometryChange = placeJoystickChrome
 	})
+	connect(dragHandle, {
+		onMousePress = onDragHandlePress,
+		onMouseRelease = onDragHandleRelease,
+		onMouseMove = onDragHandleMove
+	})
+	ensureJoystickShortcut()
 	connect(g_game, {
 		onGameStart = onGameStart,
 		onGameEnd = onGameEnd
@@ -38,7 +53,13 @@ function terminate()
 	disconnect(keypad, {
 		onMousePress = onKeypadTouchPress,
 		onMouseRelease = onKeypadTouchRelease,
-		onMouseMove = onKeypadTouchMove
+		onMouseMove = onKeypadTouchMove,
+		onGeometryChange = placeJoystickChrome
+	})
+	disconnect(dragHandle, {
+		onMousePress = onDragHandlePress,
+		onMouseRelease = onDragHandleRelease,
+		onMouseMove = onDragHandleMove
 	})
 	disconnect(g_game, {
 		onGameStart = onGameStart,
@@ -59,12 +80,195 @@ function show()
 end
 
 function onGameStart()
-	keypad:raise()
-	keypad:show()
+	addEvent(function()
+		if not keypad or keypad:isDestroyed() then
+			return
+		end
+
+		ensureJoystickShortcut()
+		restoreJoystickLayout()
+		keypad:raise()
+		dragHandle:raise()
+		scheduleEvent(ensureJoystickShortcut, 300)
+	end)
 end
 
 function onGameEnd()
 	keypad:hide()
+	dragHandle:hide()
+end
+
+local function keypadLocalPosition()
+	local origin = overlay:getPosition()
+	local pos = keypad:getPosition()
+
+	return pos.x - origin.x, pos.y - origin.y
+end
+
+function moveJoystickTo(localX, localY)
+	if not overlay or overlay:getHeight() < 100 or overlay:getWidth() < 100 then
+		return
+	end
+
+	local origin = overlay:getPosition()
+	local maxX = math.max(0, overlay:getWidth() - keypad:getWidth())
+	local maxY = math.max(JOYSTICK_CHROME_HEIGHT, overlay:getHeight() - keypad:getHeight())
+
+	localX = math.max(0, math.min(maxX, localX))
+	localY = math.max(JOYSTICK_CHROME_HEIGHT, math.min(maxY, localY))
+	keypad:breakAnchors()
+	keypad:setPosition({
+		x = origin.x + localX,
+		y = origin.y + localY
+	})
+	placeJoystickChrome()
+end
+
+function placeJoystickChrome()
+	if not keypad or not dragHandle then
+		return
+	end
+
+	local pos = keypad:getPosition()
+
+	dragHandle:setPosition({
+		x = pos.x + math.floor((keypad:getWidth() - dragHandle:getWidth()) / 2),
+		y = pos.y - dragHandle:getHeight()
+	})
+	dragHandle:setVisible(keypad:isVisible())
+
+	if joystickShortcut and not joystickShortcut:isDestroyed() then
+		joystickShortcut:setOn(keypad:isVisible())
+	end
+end
+
+function saveJoystickLayout()
+	local localX, localY = keypadLocalPosition()
+
+	g_settings.setNode(JOYSTICK_SETTINGS, {
+		x = localX,
+		y = localY,
+		visible = keypad:isVisible() and 1 or 0
+	})
+	syncJoystickClearance()
+end
+
+function restoreJoystickLayout()
+	local node = g_settings.getNode(JOYSTICK_SETTINGS)
+	local visible = true
+
+	if type(node) == "table" then
+		local savedX = tonumber(node.x)
+		local savedY = tonumber(node.y)
+
+		if savedX and savedY then
+			moveJoystickTo(savedX, savedY)
+		end
+
+		if tonumber(node.visible) == 0 then
+			visible = false
+		end
+	end
+
+	setJoystickVisible(visible, true)
+end
+
+function syncJoystickClearance()
+	local leftPanel = modules.game_interface and modules.game_interface.getLeftPanel and modules.game_interface.getLeftPanel()
+
+	if not leftPanel or leftPanel:isDestroyed() or not keypad or not overlay then
+		return
+	end
+
+	local localX, localY = keypadLocalPosition()
+	local gapBelow = overlay:getHeight() - localY - keypad:getHeight()
+	local coversBottomLeft = keypad:isVisible() and localX < 30 and gapBelow < 30
+
+	leftPanel:setMarginBottom(coversBottomLeft and keypad:getHeight() or 0)
+end
+
+function setJoystickVisible(visible, skipSave)
+	keypad:setVisible(visible)
+	placeJoystickChrome()
+
+	if not skipSave then
+		saveJoystickLayout()
+	else
+		syncJoystickClearance()
+	end
+end
+
+function toggleJoystick()
+	setJoystickVisible(not keypad:isVisible())
+end
+
+function ensureJoystickShortcut()
+	if joystickShortcut and not joystickShortcut:isDestroyed() then
+		joystickShortcut:setVisible(true)
+		joystickShortcut:setOn(keypad and keypad:isVisible())
+
+		return
+	end
+
+	if not modules.game_mainpanel or not modules.game_mainpanel.addToggleButton then
+		return
+	end
+
+	joystickShortcut = modules.game_mainpanel.addToggleButton("joystickButton", tr("Show or hide the joystick"), "/images/game/mobile/joystick_toggle", toggleJoystick, false, 0)
+
+	if not joystickShortcut then
+		return
+	end
+
+	joystickShortcut:setVisible(true)
+	joystickShortcut:setOn(keypad and keypad:isVisible())
+
+	if modules.game_mainpanel.setMainPanelButtonVisible then
+		modules.game_mainpanel.setMainPanelButtonVisible("joystickButton", true)
+	end
+end
+
+function onDragHandlePress(widget, pos, button)
+	if button ~= MouseLeftButton then
+		return false
+	end
+
+	local keypadPos = keypad:getPosition()
+
+	draggingKeypad = true
+	dragOffset.x = pos.x - keypadPos.x
+	dragOffset.y = pos.y - keypadPos.y
+	widget:grabMouse()
+
+	return true
+end
+
+function onDragHandleMove(widget, pos)
+	if not draggingKeypad then
+		return false
+	end
+
+	local origin = overlay:getPosition()
+
+	moveJoystickTo(pos.x - dragOffset.x - origin.x, pos.y - dragOffset.y - origin.y)
+
+	return true
+end
+
+function onDragHandleRelease(widget, pos, button)
+	if button ~= MouseLeftButton then
+		return false
+	end
+
+	draggingKeypad = false
+
+	if widget.ungrabMouse then
+		widget:ungrabMouse()
+	end
+
+	saveJoystickLayout()
+
+	return true
 end
 
 function addOnJoystickMoveListener(callback)
