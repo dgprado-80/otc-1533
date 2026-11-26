@@ -164,7 +164,13 @@ local function load(version)
 	loaded = #errorList == 0
 
 	if loaded then
-		g_sounds.loadClientFiles(resolvepath("/sounds/"))
+		-- Same layout as /things/<version>/: one sound pack per client version.
+		local soundsPath = "/sounds/" .. assetsVersion .. "/"
+		if not g_resources.directoryExists(soundsPath) then
+			soundsPath = "/sounds/"
+			g_logger.warning(string.format("[game_things.load()] sounds/%s missing, falling back to /sounds/", assetsVersion))
+		end
+		g_sounds.loadClientFiles(resolvepath(soundsPath))
 
 		return
 	end

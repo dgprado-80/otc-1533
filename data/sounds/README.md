@@ -1,9 +1,14 @@
-# Adding client versions
+# Client sounds
 
-Create a version folder and drop your soundbank in it.
+Keep one folder per client version. The game loads `/sounds/<version>/`.
 
-For the list of supported client versions see `modules/gamelib/game.lua`
+```
+data/sounds/
+  README.md
+  1530/
+    catalog-sound.json
+    sounds-….dat          # soundbank (protobuf), required
+    sound-….ogg           # audio files listed by the soundbank
+```
 
-# Example configuration
-
-`data/sounds/1340/ (catalog-sound.json and all sound files)`
+`1524` and loose files in the sounds root are obsolete. Do not put `.ogg` files directly under `data/sounds/`.
